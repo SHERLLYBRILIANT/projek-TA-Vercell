@@ -1,0 +1,552 @@
+{% extends "base.html" %}
+{% block title %}Login — GiziLens{% endblock %}
+{% block auth_content %}
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+
+/* =========================================================
+   RESET & BASE
+========================================================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    height:100vh;
+    overflow:hidden;
+    font-family:'Nunito',sans-serif;
+    background:#fff;
+    color:#2F2F2F;
+}
+
+/* FIX: MENGHAPUS IKON MATA BAWAAN BROWSER */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
+
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+.login-split{
+    height:100vh;
+    display:grid;
+    grid-template-columns:1.25fr 1fr;
+}
+
+/* =========================================================
+   LEFT PANEL
+========================================================= */
+.login-visual{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+    animation:fourColorTransition 16s infinite alternate ease-in-out;
+}
+
+/* =========================================================
+   INTERACTIVE BUBBLES
+========================================================= */
+.bubbles{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    z-index:1;
+}
+
+.bubble{
+    position:absolute;
+    bottom:-140px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.16);
+    border:1px solid rgba(255,255,255,0.35);
+    backdrop-filter:blur(6px);
+    animation:floatBubble linear infinite;
+    cursor:pointer;
+    transition: transform .3s ease, background .3s ease, box-shadow .3s ease;
+}
+
+.bubble:hover{
+    transform:scale(1.18);
+    background:rgba(255,255,255,0.3);
+    box-shadow:0 0 25px rgba(255,255,255,.5);
+}
+
+.bubble::before{
+    content:"";
+    position:absolute;
+    top:12%;
+    left:18%;
+    width:22%;
+    height:22%;
+    border-radius:50%;
+    background:rgba(255,255,255,.45);
+}
+
+.b1{ width:80px; height:80px; left:8%; animation-duration:18s; }
+.b2{ width:150px; height:150px; left:22%; animation-duration:25s; animation-delay:3s; }
+.b3{ width:60px; height:60px; left:40%; animation-duration:16s; animation-delay:1s; }
+.b4{ width:170px; height:170px; left:58%; animation-duration:30s; animation-delay:4s; }
+.b5{ width:90px; height:90px; left:78%; animation-duration:22s; animation-delay:2s; }
+.b6{ width:120px; height:120px; left:88%; animation-duration:28s; animation-delay:6s; }
+
+.bubble.pop{
+    animation:none;
+    transform:scale(1.8);
+    opacity:0;
+    transition:all .5s ease;
+}
+
+/* =========================================================
+   BACKGROUND EFFECT
+========================================================= */
+.blur-ball{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(70px);
+    opacity:.4;
+    z-index:0;
+}
+
+.ball-1{ width:240px; height:240px; background:#ffffff; top:-40px; left:-40px; }
+.ball-2{ width:200px; height:200px; background:#FFD9E2; bottom:-30px; right:-30px; }
+
+.visual-dots::before,
+.visual-dots::after{
+    content:"";
+    position:absolute;
+    width:180px;
+    height:180px;
+    background-image: radial-gradient(rgba(255,255,255,.35) 2px, transparent 2px);
+    background-size:18px 18px;
+    z-index:1;
+}
+
+.visual-dots::before{ top:40px; right:30px; }
+.visual-dots::after{ bottom:20px; left:40px; }
+
+/* =========================================================
+   FLOATING ICONS
+========================================================= */
+.bg-icon{
+    position:absolute;
+    color:rgba(255,255,255,.3);
+    z-index:2;
+    pointer-events:none;
+    animation:float-random 10s infinite ease-in-out;
+}
+
+.i-1{ top:10%; left:10%; font-size:3rem; }
+.i-2{ top:70%; left:15%; font-size:2.5rem; animation-delay:2s; }
+.i-3{ top:20%; right:20%; font-size:4rem; animation-delay:4s; }
+.i-4{ bottom:15%; right:10%; font-size:3.5rem; animation-delay:1s; }
+
+/* =========================================================
+   GLASS CONTENT
+========================================================= */
+.visual-content{
+    position:relative;
+    z-index:10;
+    width:100%;
+    max-width:500px;
+    text-align:center;
+    padding:40px;
+    border-radius:35px;
+    background:rgba(255,255,255,.2);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.35);
+    box-shadow: 0 25px 50px rgba(0,0,0,.08), inset 0 1px 1px rgba(255,255,255,.25);
+    animation:fadeUp 1s ease;
+}
+
+.welcome-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 16px;
+    border-radius:30px;
+    background:white;
+    color:#CA6180;
+    font-size:.72rem;
+    font-weight:800;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    margin-bottom:18px;
+}
+
+.visual-title{
+    font-family:'Fraunces',serif;
+    font-size:clamp(2rem,3.5vw,3rem);
+    font-weight:700;
+    line-height:1.1;
+    margin-bottom:12px;
+}
+
+.visual-subtitle{
+    color:#4A4A4A;
+    font-weight:700;
+    margin-bottom:28px;
+}
+
+.quote-stack{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-bottom:30px;
+}
+
+.quote-chip{
+    background:rgba(255,255,255,.48);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:18px;
+    padding:14px 18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:.9rem;
+    font-weight:700;
+    transition:.3s ease;
+}
+
+.quote-chip:hover{
+    transform:translateX(8px);
+    background:rgba(255,255,255,.72);
+    box-shadow:0 10px 20px rgba(0,0,0,.05);
+}
+
+.quote-chip i{ color:#CA6180; }
+
+.stats-row{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    flex-wrap:wrap;
+}
+
+.stat-box{
+    min-width:110px;
+    background:rgba(255,255,255,.4);
+    border:1px solid rgba(255,255,255,.3);
+    border-radius:18px;
+    padding:14px 18px;
+    backdrop-filter:blur(10px);
+}
+
+.stat-box h3{ margin:0; font-size:1.2rem; font-weight:800; }
+.stat-box span{ font-size:.75rem; color:#666; font-weight:700; }
+
+/* =========================================================
+   RIGHT PANEL & CARD
+========================================================= */
+.login-panel{
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+    overflow:hidden;
+    background: radial-gradient(circle at top right, rgba(252,183,199,0.18), transparent 30%), radial-gradient(circle at bottom left, rgba(158,211,220,0.18), transparent 30%), linear-gradient(135deg, #FFFFFF, #FFF9FB);
+}
+
+.login-panel::before{
+    content:""; position:absolute; width:320px; height:320px; background:#FCB7C7; border-radius:50%; top:-120px; right:-120px; filter:blur(100px); opacity:.25;
+}
+
+.login-panel::after{
+    content:""; position:absolute; width:260px; height:260px; background:#9ED3DC; border-radius:50%; bottom:-120px; left:-120px; filter:blur(100px); opacity:.22;
+}
+
+.login-card{
+    position:relative;
+    overflow:hidden;
+    width:100%;
+    max-width:440px;
+    padding:48px;
+    border-radius:34px;
+    background:rgba(255,255,255,0.82);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 25px 50px rgba(202,97,128,0.08), 0 10px 20px rgba(0,0,0,0.04);
+    z-index:10;
+    transition:.4s ease;
+    animation:fadeUp 1s ease;
+}
+
+.login-card:hover{ transform:translateY(-4px); }
+
+.login-card::before{
+    content:""; position:absolute; inset:-2px; border-radius:36px; padding:2px; background:linear-gradient(135deg, #FCB7C7, #9ED3DC, #FEFD99, #CA6180); background-size:300% 300%; animation:borderMove 8s linear infinite; -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none;
+}
+
+.login-card-header h2{
+    font-family:'Fraunces',serif; font-size:2rem; font-weight:700; margin-bottom:10px; background:linear-gradient(135deg, #CA6180, #E28AA2); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+.login-card-header p{ color:#777; font-size:.95rem; line-height:1.6; margin-bottom:32px; }
+
+/* =========================================================
+   INPUTS
+========================================================= */
+.field-group{
+    position:relative;
+    margin-bottom:18px;
+}
+
+.field-group input{
+    width:100%;
+    height:60px;
+    border-radius:18px;
+    border:1.5px solid #F0F0F0;
+    background:rgba(255,255,255,.72);
+    padding: 18px 55px 0 54px;
+    font-weight:700;
+    transition:.3s;
+}
+
+.field-group input:hover{ border-color:#FCB7C7; }
+.field-group input:focus{ outline:none; border-color:#9ED3DC; background:#fff; box-shadow: 0 0 0 4px rgba(158,211,220,.15); }
+
+.field-group label{ position:absolute; top:18px; left:54px; color:#AAA; transition:.2s; pointer-events:none; }
+
+.field-group input:focus + label,
+.field-group input:not(:placeholder-shown) + label{ top:8px; font-size:.7rem; font-weight:800; color:#CA6180; }
+
+.field-icon{ position:absolute; top:50%; left:20px; transform:translateY(-50%); color:#CA6180; }
+
+.password-toggle{
+    position:absolute;
+    top:50%;
+    right:18px;
+    transform:translateY(-50%);
+    cursor:pointer;
+    color:#999;
+    font-size:1rem;
+    z-index:5;
+    transition:.2s ease;
+}
+
+.password-toggle:hover{ color:#CA6180; }
+
+/* =========================================================
+   BUTTON & DIVIDER
+========================================================= */
+.login-btn{
+    position:relative;
+    overflow:hidden;
+    width:100%;
+    height:60px;
+    border:none;
+    border-radius:18px;
+    background: linear-gradient(135deg, #CA6180, #E07A99);
+    color:white;
+    font-weight:800;
+    font-size:.95rem;
+    cursor:pointer;
+    transition:.35s ease;
+    margin-top:14px;
+    box-shadow: 0 12px 25px rgba(202,97,128,0.25);
+}
+
+.login-btn:hover{ transform: translateY(-2px) scale(1.01); }
+
+.modern-divider{
+    position:relative;
+    text-align:center;
+    margin-top:28px;
+}
+
+.modern-divider::before{
+    content:""; position:absolute; top:50%; left:0; width:100%; height:1px; background:#F1D5DD;
+}
+
+.modern-divider span{
+    position:relative; background:white; padding:0 16px; font-size:.75rem; font-weight:700; color:#CA6180;
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+@keyframes fourColorTransition{
+    0%{ background-color:#9ED3DC; }
+    33%{ background-color:#FEFD99; }
+    66%{ background-color:#FCB7C7; }
+    100%{ background-color:#CA6180; }
+}
+
+@keyframes float-random{
+    0%,100%{ transform:translate(0,0); }
+    50%{ transform:translate(15px,-15px); }
+}
+
+@keyframes floatBubble{
+    0%{ transform:translateY(0) rotate(0deg); opacity:0; }
+    10%{ opacity:1; }
+    100%{ transform:translateY(-120vh) rotate(360deg); opacity:0; }
+}
+
+@keyframes fadeUp{
+    from{ opacity:0; transform:translateY(30px); }
+    to{ opacity:1; transform:translateY(0); }
+}
+
+@keyframes borderMove{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:100% 50%; }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media(max-width:1100px){
+    body, html{ overflow:auto; height:auto; }
+    .login-split{ grid-template-columns:1fr; }
+    .login-visual{ min-height:500px; }
+    .login-panel{ padding:25px; }
+    .login-card{ padding:30px; }
+}
+
+</style>
+
+<div class="login-split">
+
+    <!-- LEFT -->
+    <section class="login-visual">
+        <div class="blur-ball ball-1"></div>
+        <div class="blur-ball ball-2"></div>
+
+        <div class="bubbles">
+            <div class="bubble b1"></div>
+            <div class="bubble b2"></div>
+            <div class="bubble b3"></div>
+            <div class="bubble b4"></div>
+            <div class="bubble b5"></div>
+            <div class="bubble b6"></div>
+        </div>
+
+        <div class="visual-dots"></div>
+
+        <i class="bi bi-plus-lg bg-icon i-1"></i>
+        <i class="bi bi-hospital bg-icon i-2"></i>
+        <i class="bi bi-plus-circle bg-icon i-3"></i>
+        <i class="bi bi-heart-pulse bg-icon i-4"></i>
+
+        <div class="visual-content">
+            <div class="welcome-pill">
+                <i class="bi bi-search-heart-fill" style="font-size:20px; color:#CA6180;"></i>
+                GiziLens
+            </div>
+
+            <h1 class="visual-title">
+                Gizi Tepat,<br> Masa Depan Hebat.
+            </h1>
+
+            <p class="visual-subtitle">
+                Analisis cerdas status nutrisi buah hati.
+            </p>
+
+            <div class="quote-stack">
+                <div class="quote-chip">
+                    <i class="bi bi-check2-circle"></i> Deteksi dini stunting lebih akurat.
+                </div>
+                <div class="quote-chip">
+                    <i class="bi bi-graph-up-arrow"></i> Pantau progres secara real-time.
+                </div>
+                <div class="quote-chip">
+                    <i class="bi bi-shield-check"></i> Data aman bagi keluarga.
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box"><h3>98%</h3><span>Akurasi</span></div>
+                <div class="stat-box"><h3>Real-Time</h3><span>Monitoring</span></div>
+                <div class="stat-box"><h3>Model</h3><span>Deep Learning</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RIGHT -->
+    <section class="login-panel">
+        <div class="login-card">
+            <div class="login-card-header">
+                <h2>Selamat Datang!</h2>
+                <p>Silakan masuk untuk akses dashboard GiziLens AI Healthcare System.</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <!-- USERNAME -->
+                <div class="field-group">
+                    <i class="bi bi-person field-icon"></i>
+                    <input type="text" name="username" id="username" placeholder=" " required autofocus>
+                    <label for="username">Username</label>
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="field-group">
+                    <i class="bi bi-lock field-icon"></i>
+                    <input type="password" name="password" id="password" placeholder=" " required>
+                    <label for="password">Password</label>
+                    <span class="password-toggle" id="togglePassword">
+                        <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                    </span>
+                </div>
+
+                <button type="submit" class="login-btn">Masuk ke GiziLens</button>
+
+                <div class="modern-divider">
+                    <span>GiziLens AI Healthcare System</span>
+                </div>
+            </form>
+
+        </div>
+    </section>
+</div>
+
+<script>
+/* SHOW / HIDE PASSWORD */
+const togglePassword = document.getElementById('togglePassword');
+const password = document.getElementById('password');
+const toggleIcon = document.getElementById('toggleIcon');
+
+togglePassword.addEventListener('click', function(){
+    const isPassword = password.getAttribute('type') === 'password';
+    password.setAttribute('type', isPassword ? 'text' : 'password');
+    
+    if(isPassword){
+        toggleIcon.classList.remove('bi-eye-slash');
+        toggleIcon.classList.add('bi-eye');
+    } else {
+        toggleIcon.classList.remove('bi-eye');
+        toggleIcon.classList.add('bi-eye-slash');
+    }
+});
+
+/* INTERACTIVE BUBBLE POP */
+const bubbles = document.querySelectorAll('.bubble');
+bubbles.forEach(bubble => {
+    bubble.addEventListener('click', () => {
+        bubble.classList.add('pop');
+        setTimeout(() => { bubble.classList.remove('pop'); }, 500);
+    });
+});
+</script>
+
+{% endblock %}

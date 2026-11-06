@@ -1,0 +1,462 @@
+<div class="accordion accordion-flush border rounded-3" id="accTrain">
+
+  <div class="accordion-item rounded-3 mb-2 border">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed fw-bold rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#train-BBU">
+        <span class="text-primary me-2">[Weight for Age]</span> Accuracy: 96.78%
+      </button>
+    </h2>
+    <div id="train-BBU" class="accordion-collapse collapse" data-bs-parent="#accTrain">
+      <div class="accordion-body p-0">
+        <div class="p-3 bg-light border-bottom d-flex gap-4 small text-muted">
+          <span><strong>Accuracy:</strong> 0.9678</span>
+          <span><strong>F1 Weighted:</strong> 0.9677</span>
+          <span><strong>F1 Macro:</strong> 0.9688</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-borderless text-center mb-0 small">
+            <thead class="table-light text-muted border-bottom">
+              <tr>
+                <th class="text-start ps-4 w-25">Label</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th class="pe-4">Support</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Underfed</td>
+                <td>0.95</td>
+                <td>0.94</td>
+                <td>0.95</td>
+                <td class="pe-4">23064</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Normal</td>
+                <td>0.98</td>
+                <td>0.98</td>
+                <td>0.98</td>
+                <td class="pe-4">32035</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Malnutrition</td>
+                <td>0.97</td>
+                <td>0.95</td>
+                <td>0.96</td>
+                <td class="pe-4">19220</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Overnutrition</td>
+                <td>0.98</td>
+                <td>0.99</td>
+                <td>0.99</td>
+                <td class="pe-4">11532</td>
+              </tr>
+              <tr class="border-top">
+                <td class="text-start ps-4 text-muted">accuracy</td>
+                <td></td>
+                <td></td>
+                <td class="fw-bold">0.97</td>
+                <td class="pe-4">85851</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 text-muted">macro avg</td>
+                <td>0.97</td>
+                <td>0.97</td>
+                <td>0.97</td>
+                <td class="pe-4">85851</td>
+              </tr>
+              <tr class="table-light">
+                <td class="text-start ps-4 fw-bold text-dark">weighted avg</td>
+                <td class="fw-bold">0.97</td>
+                <td class="fw-bold">0.97</td>
+                <td class="fw-bold">0.97</td>
+                <td class="pe-4 fw-bold">85851</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item rounded-3 mb-2 border">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed fw-bold rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#train-TBU">
+        <span class="text-primary me-2">[Height for Age]</span> Accuracy: 97.21%
+      </button>
+    </h2>
+    <div id="train-TBU" class="accordion-collapse collapse" data-bs-parent="#accTrain">
+      <div class="accordion-body p-0">
+        <div class="p-3 bg-light border-bottom d-flex gap-4 small text-muted">
+          <span><strong>Accuracy:</strong> 0.9721</span>
+          <span><strong>F1 Weighted:</strong> 0.9721</span>
+          <span><strong>F1 Macro:</strong> 0.9710</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-borderless text-center mb-0 small">
+            <thead class="table-light text-muted border-bottom">
+              <tr>
+                <th class="text-start ps-4 w-25">Label</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th class="pe-4">Support</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Not Stunted</td>
+                <td>0.98</td>
+                <td>0.98</td>
+                <td>0.98</td>
+                <td class="pe-4">51255</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Stunted</td>
+                <td>0.96</td>
+                <td>0.97</td>
+                <td>0.97</td>
+                <td class="pe-4">34596</td>
+              </tr>
+              <tr class="border-top">
+                <td class="text-start ps-4 text-muted">accuracy</td>
+                <td></td>
+                <td></td>
+                <td class="fw-bold">0.97</td>
+                <td class="pe-4">85851</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 text-muted">macro avg</td>
+                <td>0.97</td>
+                <td>0.97</td>
+                <td>0.97</td>
+                <td class="pe-4">85851</td>
+              </tr>
+              <tr class="table-light">
+                <td class="text-start ps-4 fw-bold text-dark">weighted avg</td>
+                <td class="fw-bold">0.97</td>
+                <td class="fw-bold">0.97</td>
+                <td class="fw-bold">0.97</td>
+                <td class="pe-4 fw-bold">85851</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item rounded-3 mb-2 border">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed fw-bold rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#train-BBTB">
+        <span class="text-primary me-2">[Weight for Height]</span> Accuracy: 97.48%
+      </button>
+    </h2>
+    <div id="train-BBTB" class="accordion-collapse collapse" data-bs-parent="#accTrain">
+      <div class="accordion-body p-0">
+        <div class="p-3 bg-light border-bottom d-flex gap-4 small text-muted">
+          <span><strong>Accuracy:</strong> 0.9748</span>
+          <span><strong>F1 Weighted:</strong> 0.9748</span>
+          <span><strong>F1 Macro:</strong> 0.9731</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-borderless text-center mb-0 small">
+            <thead class="table-light text-muted border-bottom">
+              <tr>
+                <th class="text-start ps-4 w-25">Label</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th class="pe-4">Support</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Very Thin</td>
+                <td>0.99</td>
+                <td>0.94</td>
+                <td>0.97</td>
+                <td class="pe-4">15376</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Thin</td>
+                <td>0.93</td>
+                <td>0.97</td>
+                <td>0.95</td>
+                <td class="pe-4">19220</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Normal</td>
+                <td>0.98</td>
+                <td>0.98</td>
+                <td>0.98</td>
+                <td class="pe-4">32035</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Obese</td>
+                <td>1.00</td>
+                <td>1.00</td>
+                <td>1.00</td>
+                <td class="pe-4">19220</td>
+              </tr>
+              <tr class="border-top">
+                <td class="text-start ps-4 text-muted">accuracy</td>
+                <td></td>
+                <td></td>
+                <td class="fw-bold">0.97</td>
+                <td class="pe-4">85851</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 text-muted">macro avg</td>
+                <td>0.98</td>
+                <td>0.97</td>
+                <td>0.97</td>
+                <td class="pe-4">85851</td>
+              </tr>
+              <tr class="table-light">
+                <td class="text-start ps-4 fw-bold text-dark">weighted avg</td>
+                <td class="fw-bold">0.98</td>
+                <td class="fw-bold">0.97</td>
+                <td class="fw-bold">0.97</td>
+                <td class="pe-4 fw-bold">85851</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="accordion accordion-flush border rounded-3" id="accTest">
+
+  <div class="accordion-item rounded-3 mb-2 border">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed fw-bold rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#test-BBU">
+        <span class="text-primary me-2">[Weight for Age]</span> Accuracy: 96.46%
+      </button>
+    </h2>
+    <div id="test-BBU" class="accordion-collapse collapse" data-bs-parent="#accTest">
+      <div class="accordion-body p-0">
+        <div class="p-3 bg-light border-bottom d-flex gap-4 small text-muted">
+          <span><strong>Accuracy:</strong> 0.9646</span>
+          <span><strong>F1 Weighted:</strong> 0.9649</span>
+          <span><strong>F1 Macro:</strong> 0.8875</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-borderless text-center mb-0 small">
+            <thead class="table-light text-muted border-bottom">
+              <tr>
+                <th class="text-start ps-4 w-25">Label</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th class="pe-4">Support</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Underfed</td>
+                <td>0.91</td>
+                <td>0.88</td>
+                <td>0.90</td>
+                <td class="pe-4">1663</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Normal</td>
+                <td>0.98</td>
+                <td>0.98</td>
+                <td>0.98</td>
+                <td class="pe-4">8539</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Malnutrition</td>
+                <td>0.84</td>
+                <td>0.95</td>
+                <td>0.89</td>
+                <td class="pe-4">401</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Overnutrition</td>
+                <td>0.67</td>
+                <td>0.93</td>
+                <td>0.78</td>
+                <td class="pe-4">59</td>
+              </tr>
+              <tr class="border-top">
+                <td class="text-start ps-4 text-muted">accuracy</td>
+                <td></td>
+                <td></td>
+                <td class="fw-bold">0.96</td>
+                <td class="pe-4">10662</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 text-muted">macro avg</td>
+                <td>0.85</td>
+                <td>0.94</td>
+                <td>0.89</td>
+                <td class="pe-4">10662</td>
+              </tr>
+              <tr class="table-light">
+                <td class="text-start ps-4 fw-bold text-dark">weighted avg</td>
+                <td class="fw-bold">0.97</td>
+                <td class="fw-bold">0.96</td>
+                <td class="fw-bold">0.96</td>
+                <td class="pe-4 fw-bold">10662</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item rounded-3 mb-2 border">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed fw-bold rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#test-TBU">
+        <span class="text-primary me-2">[Height for Age]</span> Accuracy: 95.88%
+      </button>
+    </h2>
+    <div id="test-TBU" class="accordion-collapse collapse" data-bs-parent="#accTest">
+      <div class="accordion-body p-0">
+        <div class="p-3 bg-light border-bottom d-flex gap-4 small text-muted">
+          <span><strong>Accuracy:</strong> 0.9588</span>
+          <span><strong>F1 Weighted:</strong> 0.9586</span>
+          <span><strong>F1 Macro:</strong> 0.9540</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-borderless text-center mb-0 small">
+            <thead class="table-light text-muted border-bottom">
+              <tr>
+                <th class="text-start ps-4 w-25">Label</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th class="pe-4">Support</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Not Stunted</td>
+                <td>0.96</td>
+                <td>0.98</td>
+                <td>0.97</td>
+                <td class="pe-4">6972</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Stunted</td>
+                <td>0.96</td>
+                <td>0.92</td>
+                <td>0.94</td>
+                <td class="pe-4">3690</td>
+              </tr>
+              <tr class="border-top">
+                <td class="text-start ps-4 text-muted">accuracy</td>
+                <td></td>
+                <td></td>
+                <td class="fw-bold">0.96</td>
+                <td class="pe-4">10662</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 text-muted">macro avg</td>
+                <td>0.96</td>
+                <td>0.95</td>
+                <td>0.95</td>
+                <td class="pe-4">10662</td>
+              </tr>
+              <tr class="table-light">
+                <td class="text-start ps-4 fw-bold text-dark">weighted avg</td>
+                <td class="fw-bold">0.96</td>
+                <td class="fw-bold">0.96</td>
+                <td class="fw-bold">0.96</td>
+                <td class="pe-4 fw-bold">10662</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item rounded-3 mb-2 border">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed fw-bold rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#test-BBTB">
+        <span class="text-primary me-2">[Weight for Height]</span> Accuracy: 98.11%
+      </button>
+    </h2>
+    <div id="test-BBTB" class="accordion-collapse collapse" data-bs-parent="#accTest">
+      <div class="accordion-body p-0">
+        <div class="p-3 bg-light border-bottom d-flex gap-4 small text-muted">
+          <span><strong>Accuracy:</strong> 0.9811</span>
+          <span><strong>F1 Weighted:</strong> 0.9816</span>
+          <span><strong>F1 Macro:</strong> 0.8922</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-borderless text-center mb-0 small">
+            <thead class="table-light text-muted border-bottom">
+              <tr>
+                <th class="text-start ps-4 w-25">Label</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th class="pe-4">Support</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Very Thin</td>
+                <td>0.87</td>
+                <td>0.82</td>
+                <td>0.84</td>
+                <td class="pe-4">88</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Thin</td>
+                <td>0.80</td>
+                <td>0.92</td>
+                <td>0.86</td>
+                <td class="pe-4">540</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Normal</td>
+                <td>1.00</td>
+                <td>0.99</td>
+                <td>0.99</td>
+                <td class="pe-4">9905</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 fw-medium text-dark">Obese</td>
+                <td>0.83</td>
+                <td>0.94</td>
+                <td>0.88</td>
+                <td class="pe-4">129</td>
+              </tr>
+              <tr class="border-top">
+                <td class="text-start ps-4 text-muted">accuracy</td>
+                <td></td>
+                <td></td>
+                <td class="fw-bold">0.98</td>
+                <td class="pe-4">10662</td>
+              </tr>
+              <tr>
+                <td class="text-start ps-4 text-muted">macro avg</td>
+                <td>0.87</td>
+                <td>0.92</td>
+                <td>0.89</td>
+                <td class="pe-4">10662</td>
+              </tr>
+              <tr class="table-light">
+                <td class="text-start ps-4 fw-bold text-dark">weighted avg</td>
+                <td class="fw-bold">0.98</td>
+                <td class="fw-bold">0.98</td>
+                <td class="fw-bold">0.98</td>
+                <td class="pe-4 fw-bold">10662</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

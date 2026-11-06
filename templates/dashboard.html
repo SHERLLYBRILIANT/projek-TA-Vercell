@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — GiziLens{% endblock %}
+{% block page_title %}<i class="bi bi-speedometer2 me-2"></i>Dashboard{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-12 col-md-4">
+    <!-- Menambahkan border: 2px solid rgba(0,0,0,0.2) untuk mempertegas batas kartu -->
+    <div class="stat-card bg-grad-blue shadow-sm" style="color: #000; border: 2px solid rgba(0,0,0,0.15); border-radius: 15px;">
+      <div class="stat-icon">👶</div>
+      <div class="stat-value">{{ total_balita }}</div>
+      <div class="stat-label fw-bold">Total Balita</div>
+    </div>
+  </div>
+  
+  <div class="col-12 col-md-4">
+    <div class="stat-card bg-grad-green shadow-sm" style="color: #000; border: 2px solid rgba(0,0,0,0.15); border-radius: 15px;">
+      <div class="stat-icon">📋</div>
+      <div class="stat-value">{{ total_pemeriksaan }}</div>
+      <div class="stat-label fw-bold">Total Pemeriksaan</div>
+    </div>
+  </div>
+  
+  <div class="col-12 col-md-4">
+    <div class="stat-card bg-grad-red shadow-sm" style="color: #000; border: 2px solid rgba(0,0,0,0.15); border-radius: 15px;">
+      <div class="stat-icon">📉</div>
+      <div class="stat-value">{{ total_stunted }}</div>
+      <div class="stat-label fw-bold">Kasus Stunting</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Action -->
+<!-- Quick Action removed per request -->
+
+<!-- Charts -->
+<div class="row g-3 mb-2">
+  <div class="col-12">
+    <h4 class="fw-bold mb-0">Visualisasi Distribusi Status Gizi Balita</h4>
+    <p class="text-muted" style="font-size:.9rem;margin-top:.25rem;">Ringkasan visual dari distribusi kategori gizi untuk analitik dan pengambilan keputusan.</p>
+  </div>
+</div>
+
+<!-- Legend Information -->
+<div class="row g-3 mb-4">
+  <!-- BB/U Legend -->
+  <div class="col-12 col-md-4">
+    <!-- Menambahkan border 2px dengan warna yang lebih gelap dari background (#D4B900) -->
+    <div class="card h-100 shadow-sm" style="background: #FFEA6C; border: 2px solid #D4B900; border-radius: 12px;">
+      <div class="card-body">
+        <h6 class="card-title fw-bold mb-3" style="color: #2F2F2F;">
+          <i class="bi bi-info-circle-fill me-2"></i>Kategori BB/U (Berat/Umur)
+        </h6>
+        <div class="d-flex flex-column" style="font-size: .9rem;">
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #9ED3DC; color: #000; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Normal</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Berat badan sesuai usia</span>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #FEFD99; color: #000; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Underfed</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Kekurangan gizi ringan</span>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #CA6180; color: #fff; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Malnutrition</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Kekurangan gizi berat</span>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #FCB7C7; color: #000; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Overnutrition</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Kelebihan gizi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TB/U Legend -->
+  <div class="col-12 col-md-4">
+    <div class="card h-100 shadow-sm" style="background: #FFEA6C; border: 2px solid #D4B900; border-radius: 12px;">
+      <div class="card-body">
+        <h6 class="card-title fw-bold mb-3" style="color: #2F2F2F;">
+          <i class="bi bi-info-circle-fill me-2"></i>Kategori TB/U (Tinggi/Umur)
+        </h6>
+        <div class="d-flex flex-column" style="font-size: .9rem;">
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #9ED3DC; color: #000; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Normal</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Tinggi badan sesuai usia</span>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #CA6180; color: #fff; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Stunted</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Stunting (pertumbuhan terhambat)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BB/TB Legend -->
+  <div class="col-12 col-md-4">
+    <div class="card h-100 shadow-sm" style="background: #FFEA6C; border: 2px solid #D4B900; border-radius: 12px;">
+      <div class="card-body">
+        <h6 class="card-title fw-bold mb-3" style="color: #2F2F2F;">
+          <i class="bi bi-info-circle-fill me-2"></i>Kategori BB/TB (Berat/Tinggi)
+        </h6>
+        <div class="d-flex flex-column" style="font-size: .9rem;">
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #9ED3DC; color: #000; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Normal</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Proporsi normal</span>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #FEFD99; color: #000; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Thin</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Kurus</span>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #CA6180; color: #fff; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Very Thin</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Sangat kurus</span>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge" style="background: #FCB7C7; color: #000; width: 95px; border: 1px solid rgba(0,0,0,0.1);">Obese</span>
+            <span class="ms-2 fw-medium" style="color: #2F2F2F;">Obesitas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <!-- Menambahkan class border dan sedikit shadow agar lebih 'pop out' -->
+    <div class="card h-100 border border-secondary-subtle shadow-sm">
+      <div class="card-header d-flex align-items-center gap-2 bg-white border-bottom">
+        <i class="bi bi-pie-chart text-danger"></i>
+        <span class="fw-bold">Distribusi BB/U</span>
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-center">
+        <canvas id="chartBBU" style="max-height:220px"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card h-100 border border-secondary-subtle shadow-sm">
+      <div class="card-header d-flex align-items-center gap-2 bg-white border-bottom">
+        <i class="bi bi-pie-chart text-danger"></i>
+        <span class="fw-bold">Distribusi TB/U (Stunting)</span>
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-center">
+        <canvas id="chartTBU" style="max-height:220px"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card h-100 border border-secondary-subtle shadow-sm">
+      <div class="card-header d-flex align-items-center gap-2 bg-white border-bottom">
+        <i class="bi bi-pie-chart text-danger"></i>
+        <span class="fw-bold">Distribusi BB/TB</span>
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-center">
+        <canvas id="chartBBTB" style="max-height:220px"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Riwayat terbaru -->
+<div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+  <!-- Mengubah area header putih di image_b201b4.png menjadi warna #CA6180 -->
+  <div class="card-header d-flex justify-content-between align-items-center py-3" style="background-color: #CA6180; border: none;">
+    <span class="fw-bold text-white fs-5">
+      <i class="bi bi-clock-history me-2"></i>Pemeriksaan Terbaru
+    </span>
+    <a href="{{ url_for('riwayat') }}" class="btn btn-sm btn-light fw-bold" style="color: #CA6180; border-radius: 8px;">
+      Lihat Semua
+    </a>
+  </div>
+  
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <!-- Header Kolom Tabel -->
+        <thead style="background-color: #f8f9fa;">
+          <tr style="border-bottom: 2px solid #dee2e6;">
+            <th class="ps-3 py-3">Nama Balita</th>
+            <th>Jenis Kelamin</th>
+            <th>Umur (bulan)</th>
+            <th>BB/U</th>
+            <th>TB/U</th>
+            <th>BB/TB</th>
+            <th>Tanggal</th>
+            <th class="pe-3 text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in riwayat_terbaru %}
+          <tr style="border-bottom: 1px solid #eee; vertical-align: middle;">
+            <td class="fw-semibold ps-3">{{ r.nama_balita }}</td>
+            <td>
+              {% if r.jenis_kelamin == 'L' %}
+                <span class="badge rounded-pill" style="background: #9ED3DC; color: #000; border: 1px solid #7ebbc5; width: 90px;">Laki-laki</span>
+              {% else %}
+                <span class="badge rounded-pill" style="background: #FCB7C7; color: #000; border: 1px solid #e5a4b3; width: 90px;">Perempuan</span>
+              {% endif %}
+            </td>
+            <td>{{ r.umur_bulan }}</td>
+            
+            <!-- BB/U -->
+            <td>
+              {% set bbu = r.bbu_label %}
+              <span class="badge rounded-pill" 
+                style="background: {% if bbu=='Normal' %}#9ED3DC{% elif bbu=='Underfed' %}#FEFD99{% elif bbu=='Malnutrition' %}#CA6180{% elif bbu=='Overnutrition' %}#FCB7C7{% else %}#D1D5DB{% endif %}; 
+                       color: {% if bbu=='Malnutrition' %}#fff{% else %}#000{% endif %};
+                       border: 1px solid rgba(0,0,0,0.1); width: 95px;">
+                {{ bbu or '-' }}
+              </span>
+            </td>
+
+            <!-- TB/U -->
+            <td>
+              {% set tbu = r.tbu_label %}
+              <span class="badge rounded-pill" 
+                style="background: {% if tbu in ['Normal', 'Not Stunted'] %}#9ED3DC{% elif tbu=='Stunted' %}#CA6180{% else %}#D1D5DB{% endif %}; 
+                       color: {% if tbu=='Stunted' %}#fff{% else %}#000{% endif %};
+                       border: 1px solid rgba(0,0,0,0.1); width: 95px;">
+                {{ tbu or '-' }}
+              </span>
+            </td>
+
+            <!-- BB/TB -->
+            <td>
+              {% set bbtb = r.bbtb_label %}
+              <span class="badge rounded-pill" 
+                style="background: {% if bbtb=='Normal' %}#9ED3DC{% elif bbtb=='Thin' %}#FEFD99{% elif bbtb=='Very Thin' %}#CA6180{% elif bbtb=='Obese' %}#FCB7C7{% else %}#D1D5DB{% endif %}; 
+                       color: {% if bbtb=='Very Thin' %}#fff{% else %}#000{% endif %};
+                       border: 1px solid rgba(0,0,0,0.1); width: 95px;">
+                {{ bbtb or '-' }}
+              </span>
+            </td>
+
+            <td class="text-muted" style="font-size:.85rem">
+              {{ r.tanggal_periksa.strftime('%d/%m/%Y') if r.tanggal_periksa else '-' }}
+            </td>
+            <td class="pe-3 text-center">
+              <a href="{{ url_for('hasil', pemeriksaan_id=r.id) }}"
+                 class="btn btn-sm btn-outline-secondary" style="border-radius: 6px;">
+                <i class="bi bi-eye"></i>
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8" class="text-center py-5 text-muted">Belum ada data pemeriksaan</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const COLORS = {
+  bbu: {
+    Normal: '#9ED3DC',
+    Underfed: '#FEFD99',
+    Malnutrition: '#CA6180',
+    Overnutrition: '#FCB7C7'
+  },
+  tbu: {
+    Normal: '#9ED3DC',
+    'Not Stunted': '#9ED3DC',
+    Stunted: '#CA6180'
+  },
+  bbtb: {
+    Normal: '#9ED3DC',
+    Thin: '#FEFD99',
+    'Very Thin': '#CA6180',
+    Obese: '#FCB7C7'
+  }
+};
+
+function mapColors(labels, palette) {
+  return labels.map(label => palette[label] || '#D1D5DB');
+}
+
+function makeChart(id, labels, values, colorArr) {
+  const ctx = document.getElementById(id);
+  if (!ctx || !values.length) return;
+  
+  // Normalize labels: "Not Stunted" -> "Normal"
+  const normalizedLabels = labels.map(label => label === 'Not Stunted' ? 'Normal' : label);
+  
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: normalizedLabels,
+      datasets: [{ data: values, backgroundColor: colorArr,
+                   borderWidth: 2, borderColor: '#fff', hoverOffset: 6 }]
+    },
+    options: {
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } },
+      cutout: '60%'
+    }
+  });
+}
+
+const rawBBU  = {{ dist_bbu  | safe }};
+const rawTBU  = {{ dist_tbu  | safe }};
+const rawBBTB = {{ dist_bbtb | safe }};
+
+makeChart('chartBBU',  rawBBU.map(d=>d.label),  rawBBU.map(d=>d.jumlah),  mapColors(rawBBU.map(d=>d.label), COLORS.bbu));
+makeChart('chartTBU',  rawTBU.map(d=>d.label),  rawTBU.map(d=>d.jumlah),  mapColors(rawTBU.map(d=>d.label), COLORS.tbu));
+makeChart('chartBBTB', rawBBTB.map(d=>d.label), rawBBTB.map(d=>d.jumlah), mapColors(rawBBTB.map(d=>d.label), COLORS.bbtb));
+</script>
+{% endblock %}

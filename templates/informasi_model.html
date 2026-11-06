@@ -1,0 +1,1209 @@
+{% extends "base.html" %}
+
+{% block title %}Informasi Model AI — GiziLens{% endblock %}
+{% block page_title %}Informasi Model AI{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Jalur Variabel Desain Neo-Brutalism GiziLens */
+  :root {
+    --brutal-blue: #9ED3DC;
+    --brutal-yellow: #FEFD99;
+    --brutal-pink: #FCB7C7;
+    --brutal-crimson: #CA6180;
+    --brutal-dark: #2A2D34;
+    --brutal-grey: #64748B;
+  }
+
+  /* Header Card Model AI */
+  .model-header {
+    background: var(--brutal-blue) !important;
+    color: var(--brutal-dark) !important;
+    padding: 30px;
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 14px !important;
+    box-shadow: 5px 5px 0px var(--brutal-dark) !important;
+    margin-bottom: 24px;
+  }
+  .model-header h2 {
+    margin-bottom: 8px;
+    font-weight: 900;
+  }
+  .model-header p {
+    font-weight: 700;
+  }
+  .model-header .badge {
+    display: inline-block;
+    margin-right: 8px;
+    font-size: 0.8rem;
+    background-color: var(--brutal-yellow) !important;
+    color: var(--brutal-dark) !important;
+    border: 1.5px solid var(--brutal-dark) !important;
+    font-weight: 700;
+  }
+
+  /* Struktur Universal Pembuatan Card Konten */
+  .card {
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 12px !important;
+    box-shadow: 4px 4px 0px var(--brutal-dark) !important;
+    overflow: hidden;
+    background-color: #ffffff !important;
+    transition: none !important;
+    margin-bottom: 1.5rem;
+  }
+  .card-header {
+    border-bottom: 3px solid var(--brutal-dark) !important;
+    background-color: var(--brutal-pink) !important;
+    font-weight: 800 !important;
+    color: var(--brutal-dark) !important;
+    padding: 12px 20px !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  /* Tab Control Styling */
+  .nav-tabs {
+    border-bottom: 3px solid var(--brutal-dark) !important;
+  }
+  .nav-tabs .nav-item {
+    margin-bottom: -3px;
+  }
+  .nav-tabs .nav-link {
+    color: var(--brutal-dark);
+    border: 3px solid transparent !important;
+    padding: 10px 20px;
+    font-weight: 700;
+    border-radius: 8px 8px 0 0 !important;
+    transition: none;
+  }
+  .nav-tabs .nav-link:hover {
+    background-color: var(--brutal-pink);
+    border-color: var(--brutal-dark) var(--brutal-dark) transparent !important;
+  }
+  .nav-tabs .nav-link.active {
+    color: var(--brutal-dark) !important;
+    background-color: var(--brutal-yellow) !important;
+    border-color: var(--brutal-dark) var(--brutal-dark) var(--brutal-yellow) !important;
+    box-shadow: none !important;
+  }
+
+  /* Kotak Alert/Spanduk Penjelasan Kustom */
+  .brutal-alert-box {
+    background: #ffffff !important;
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 10px !important;
+    padding: 20px;
+    box-shadow: 3px 3px 0px var(--brutal-dark) !important;
+    color: var(--brutal-dark) !important;
+  }
+
+  /* Desain Tabel Data & Matrik */
+  .custom-table {
+    border-collapse: collapse;
+  }
+  .custom-table thead th {
+    background-color: #f8f9fa !important;
+    color: var(--brutal-dark) !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    border-bottom: 3px solid var(--brutal-dark) !important;
+    border-right: 1px solid #dee2e6;
+  }
+  .custom-table td, .custom-table th {
+    border: 2px solid var(--brutal-dark) !important;
+    font-weight: 700;
+    color: var(--brutal-dark) !important;
+  }
+
+  /* Desain Struktur Accordion Flushed */
+  .accordion {
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 3px 3px 0px var(--brutal-dark);
+  }
+  .accordion-item {
+    border-bottom: 2px solid var(--brutal-dark) !important;
+    background: #ffffff !important;
+  }
+  .accordion-item:last-child {
+    border-bottom: none !important;
+  }
+  .accordion-button {
+    font-weight: 800 !important;
+    color: var(--brutal-dark) !important;
+    background-color: #ffffff !important;
+    padding: 16px 20px !important;
+    transition: none !important;
+  }
+  .accordion-button:not(.collapsed) {
+    background-color: var(--brutal-blue) !important;
+    box-shadow: none !important;
+    border-bottom: 2px solid var(--brutal-dark) !important;
+  }
+  .accordion-button::after {
+    filter: brightness(0);
+  }
+
+  /* Nav Pills untuk Sub-Menu Evaluasi */
+  .nav-pills .nav-link {
+    color: var(--brutal-dark) !important;
+    border: 2px solid var(--brutal-dark) !important;
+    background-color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: 2px 2px 0px var(--brutal-dark);
+    transition: none;
+  }
+  .nav-pills .nav-link.active {
+    background-color: var(--brutal-blue) !important;
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--brutal-dark);
+  }
+
+  /* Kustomisasi Grafik */
+  .chart-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    border: 2px solid var(--brutal-dark);
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #ffffff;
+  }
+
+  /* Tombol Simulasi Perhitungan */
+  .btn-brutal-action {
+    background-color: var(--brutal-yellow) !important;
+    color: var(--brutal-dark) !important;
+    border: 2px solid var(--brutal-dark) !important;
+    font-weight: 700;
+    box-shadow: 3px 3px 0px var(--brutal-dark);
+  }
+  .btn-brutal-action:hover {
+    background-color: #e5e478 !important;
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0px var(--brutal-dark);
+  }
+
+  /* Modal Struktur */
+  .custom-modal-content {
+    border: 4px solid var(--brutal-dark) !important;
+    border-radius: 14px !important;
+    box-shadow: 6px 6px 0px var(--brutal-dark) !important;
+  }
+  .custom-modal-header {
+    background-color: var(--brutal-blue) !important;
+    border-bottom: 3px solid var(--brutal-dark) !important;
+  }
+
+  .timeline-badge {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    left: -25px;
+    top: 5px;
+    border: 2px solid var(--brutal-dark);
+    box-shadow: 1px 1px 0px var(--brutal-dark);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+  
+  <div class="model-header">
+    <h2><i class="bi bi-robot me-2"></i>Model TabNet</h2>
+    <p class="mb-2">Implementasi Deep Learning untuk Klasifikasi Status Gizi Balita Kabupaten Jeneponto</p>
+    <div class="mt-3">
+      <span class="badge">PyTorch TabNet</span>
+      <span class="badge">Bayesian Optuna</span>
+      <span class="badge">SMOTE-NC</span>
+    </div>
+  </div>
+
+  <ul class="nav nav-tabs mb-4" id="modelTab" role="tablist">
+    <li class="nav-item">
+      <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button">Ringkasan Model</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" id="eval-tab" data-bs-toggle="tab" data-bs-target="#eval" type="button">Metrik Evaluasi</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" id="train-tab" data-bs-toggle="tab" data-bs-target="#train" type="button">Performa Training</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" id="feat-tab" data-bs-toggle="tab" data-bs-target="#feat" type="button">Feature Importance</button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="modelTabContent">
+    
+    <div class="tab-pane fade show active" id="summary" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header"><i class="bi bi-robot text-dark me-2"></i>Mengenal AI Kami: Apa itu TabNet?</div>
+            <div class="card-body p-4">
+              <p class="text-dark fw-semibold lh-base mb-4">
+                Secara sederhana, <strong>TabNet</strong> adalah "otak buatan" canggih yang dirancang khusus untuk menganalisa data berbentuk tabel (seperti data riwayat usia, berat, dan tinggi badan balita). AI ini sangat spesial karena ia menggabungkan <strong>kekuatan belajar mendalam (Deep Learning)</strong> layaknya otak manusia, dengan <strong>kemampuan logika yang transparan</strong> layaknya pohon keputusan yang mudah dipahami.
+              </p>
+              
+              <h6 class="fw-bold text-dark mt-4 mb-3"><i class="bi bi-patch-question-fill text-dark me-2"></i>Kenapa Memilih TabNet?</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 h-100 border border-3 border-dark" style="background-color: rgba(158, 211, 220, 0.15);">
+                    <strong class="text-dark d-block mb-1 fs-6"><i class="bi bi-eye-fill me-1"></i> Bisa "Menjelaskan" Keputusannya</strong>
+                    <span class="text-muted small fw-semibold">Berbeda dengan AI lain yang sering menjadi "kotak hitam" misterius, TabNet memiliki fitur <em>Attention Mask</em>. Fitur ini memungkinkan AI untuk memberitahu kita secara transparan indikator mana (misal: berat atau tinggi) yang paling ia perhatikan saat memprediksi status gizi balita.</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 h-100 border border-3 border-dark" style="background-color: rgba(254, 253, 153, 0.25);">
+                    <strong class="text-dark d-block mb-1 fs-6"><i class="bi bi-funnel-fill me-1"></i> Cerdas Memilah Informasi</strong>
+                    <span class="text-muted small fw-semibold">Memiliki kemampuan <em>Sparse Feature Selection</em>, artinya AI ini secara otomatis menyeleksi dan hanya berfokus pada informasi angka (numerik) yang benar-benar krusial, sangat cocok untuk menganalisa angka antropometri pertumbuhan anak.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header" style="background-color: var(--brutal-yellow) !important;"><i class="bi bi-gear-wide-connected text-dark me-2"></i>Perjalanan Pembuatan AI (Proses Modeling)</div>
+            <div class="card-body p-4">
+              <div class="position-relative ms-3">
+                <div class="position-absolute h-100" style="left: -19px; top: 5px; width: 3px; background-color: var(--brutal-dark);"></div>
+
+                <div class="mb-4 position-relative">
+                  <span class="position-absolute timeline-badge" style="background-color: var(--brutal-blue);"></span>
+                  <h6 class="fw-bold text-dark mb-1">1. Penyeimbangan Data Pembelajaran (SMOTE)</h6>
+                  <p class="text-muted small fw-semibold mb-0">Karena kasus gizi buruk/kurang di dunia nyata mungkin lebih jarang terjadi dibanding gizi normal, kami menggunakan teknik <strong>SMOTE</strong>. Teknik ini menduplikasi contoh kasus yang langka secara virtual agar AI belajar dengan adil dan tidak meremehkan kasus gizi buruk hanya karena datanya sedikit.</p>
+                </div>
+  
+                <div class="mb-4 position-relative">
+                  <span class="position-absolute timeline-badge" style="background-color: var(--brutal-pink);"></span>
+                  <h6 class="fw-bold text-dark mb-1">2. Pencarian Setelan Sempurna (Bayesian Optuna)</h6>
+                  <p class="text-muted small fw-semibold mb-0">Layaknya mencari kombinasi gembok koper, sistem melakukan <strong>30 kali uji coba otomatis</strong> menggunakan algoritma cerdas bernama <em>Optuna</em>. Algoritma ini belajar dari kesalahan uji coba sebelumnya untuk menemukan setelan terbaik, menjadikannya jauh lebih efisien dibanding menebak secara acak.</p>
+                </div>
+                <div class="position-relative">
+                  <span class="position-absolute timeline-badge" style="background-color: var(--brutal-crimson);"></span>
+                  <h6 class="fw-bold text-dark mb-1">3. Hasil Akhir (Model Berkualitas Tinggi)</h6>
+                  <p class="text-muted small fw-semibold mb-0">Proses panjang tersebut menghasilkan model AI dengan akurasi pengujian (pada data yang belum pernah ia lihat) yang mengesankan: <strong>96.46%</strong> (BB/U), <strong>95.88%</strong> (TB/U), dan <strong>98.11%</strong> (BB/TB). Semua file otak AI ini beserta kurva laporannya kini telah tersimpan dengan rapi di sistem untuk siap digunakan kapanpun!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header" style="background-color: #f8f9fa !important;"><i class="bi bi-person-badge me-2"></i>Informasi Peneliti</div>
+            <div class="card-body p-4 text-center text-md-start">
+              <div class="d-flex flex-column flex-md-row align-items-center mb-3">
+                <div class="flex-shrink-0 mb-2 mb-md-0">
+                  <i class="bi bi-person-circle fs-1 text-dark" style="-webkit-text-stroke: 1px #fff;"></i>
+                </div>
+                <div class="ms-md-3 text-center text-md-start">
+                  <h5 class="mb-0 fw-bold" style="color: var(--brutal-crimson);">Sherlly Briliant Saputri</h5>
+                  <span class="badge bg-dark text-white font-monospace mt-1" style="font-size:0.75rem;">NIM: 5230411156</span>
+                </div>
+              </div>
+              <ul class="list-unstyled small text-dark fw-bold mt-4">
+                <li class="mb-2"><i class="bi bi-mortarboard-fill me-2 text-dark"></i>Spesialisasi: Informatika</li>
+                <li class="mb-2"><i class="bi bi-building-fill me-2 text-dark"></i>Univ. Teknologi Yogyakarta</li>
+                <li><i class="bi bi-geo-alt-fill me-2 text-dark"></i>Lokasi: Yogyakarta</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="eval" role="tabpanel">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-grid-3x3 me-2"></i>Confusion Matrix TabNet (Kiri: Training | Kanan: Testing)</h5>
+      </div>
+      
+      <div class="row g-4">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header" style="background-color: var(--brutal-blue) !important;">[Weight for Age] — Training vs Testing</div>
+            <div class="card-body p-4">
+              <div class="row g-4 align-items-center">
+                <div class="col-md-6">
+                  <h6 class="fw-bold text-center mb-3 text-dark"><i class="bi bi-bezier2 me-1"></i> [Weight for Age] — Dataset Training</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered custom-table text-center align-middle mb-0" style="font-size: 0.82rem;">
+                      <thead>
+                        <tr>
+                          <th class="border-0 bg-white"></th>
+                          <th>Underfed</th><th>Normal</th><th>Malnutrition</th><th>Overnutrition</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th class="table-light text-start">Underfed</th>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">21740</td>
+                          <td>687</td><td>637</td><td>0</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Normal</th>
+                          <td>293</td>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">31538</td>
+                          <td>14</td><td>190</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Malnutrition</th>
+                          <td>863</td><td>19</td>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">18338</td>
+                          <td>0</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Overnutrition</th>
+                          <td>0</td><td>64</td><td>0</td>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">11468</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="fw-bold text-center mb-3 text-dark"><i class="bi bi-bezier2 me-1"></i> [Weight for Age] — Dataset Testing</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered custom-table text-center align-middle mb-0" style="font-size: 0.82rem;">
+                      <thead>
+                        <tr>
+                          <th class="border-0 bg-white"></th>
+                          <th>Underfed</th><th>Normal</th><th>Malnutrition</th><th>Overnutrition</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th class="table-light text-start">Underfed</th>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">1470</td>
+                          <td>126</td><td>67</td><td>0</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Normal</th>
+                          <td>127</td>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">8381</td>
+                          <td>4</td><td>27</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Malnutrition</th>
+                          <td>20</td><td>2</td>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">379</td>
+                          <td>0</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Overnutrition</th>
+                          <td>0</td><td>4</td><td>0</td>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">55</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header" style="background-color: var(--brutal-yellow) !important;">[Height for Age] — Training vs Testing</div>
+            <div class="card-body p-4">
+              <div class="row g-4 align-items-center">
+                <div class="col-md-6">
+                  <h6 class="fw-bold text-center mb-3 text-dark">[Height for Age] &mdash; Training</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered custom-table text-center align-middle mb-0" style="font-size: 0.8rem;">
+                      <thead>
+                        <tr>
+                          <th class="border-0 bg-white"></th>
+                          <th>Not Stunted</th><th>Stunted</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th class="table-light text-start">Not Stunted</th>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">49994</td>
+                          <td>1261</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Stunted</th>
+                          <td>1133</td>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">33463</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="fw-bold text-center mb-3 text-dark">[Height for Age] &mdash; Testing</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered custom-table text-center align-middle mb-0" style="font-size: 0.8rem;">
+                      <thead>
+                        <tr>
+                          <th class="border-0 bg-white"></th>
+                          <th>Not Stunted</th><th>Stunted</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th class="table-light text-start">Not Stunted</th>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">6831</td>
+                          <td>141</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Stunted</th>
+                          <td>298</td>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">3392</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header" style="background-color: var(--brutal-crimson) !important; color:#fff !important;">[Weight for Height] — Training vs Testing</div>
+            <div class="card-body p-4">
+              <div class="row g-4 align-items-center">
+                <div class="col-md-6">
+                  <h6 class="fw-bold text-center mb-3 text-dark">[Weight for Height] &mdash; Training</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered custom-table text-center align-middle mb-0" style="font-size: 0.8rem;">
+                      <thead>
+                        <tr>
+                          <th class="border-0 bg-white"></th>
+                          <th>Very Thin</th><th>Thin</th><th>Normal</th><th>Obese</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th class="table-light text-start">Very Thin</th>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">14454</td>
+                          <td>922</td><td>0</td><td>0</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Thin</th>
+                          <td>119</td>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">18552</td>
+                          <td>549</td><td>0</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Normal</th>
+                          <td>0</td><td>508</td>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">31481</td>
+                          <td>46</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Obese</th>
+                          <td>0</td><td>0</td><td>23</td>
+                          <td style="background-color: #9ED3DC !important; color: var(--brutal-dark); font-weight: 800;">19197</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="fw-bold text-center mb-3 text-dark">[Weight for Height] &mdash; Testing</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered custom-table text-center align-middle mb-0" style="font-size: 0.8rem;">
+                      <thead>
+                        <tr>
+                          <th class="border-0 bg-white"></th>
+                          <th>Very Thin</th><th>Thin</th><th>Normal</th><th>Obese</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th class="table-light text-start">Very Thin</th>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">72</td>
+                          <td>15</td><td>1</td><td>0</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Thin</th>
+                          <td>11</td>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">497</td>
+                          <td>32</td><td>0</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Normal</th>
+                          <td>0</td><td>110</td>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">9770</td>
+                          <td>25</td>
+                        </tr>
+                        <tr>
+                          <th class="table-light text-start">Obese</th>
+                          <td>0</td><td>0</td><td>8</td>
+                          <td style="background-color: #FCB7C7 !important; color: var(--brutal-dark); font-weight: 800;">121</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="brutal-alert-box mt-4">
+        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle-fill me-2 text-dark"></i>Cara Membaca Confusion Matrix</h6>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <ul class="mb-0 ps-3 text-dark fw-semibold small lh-base">
+              <li class="mb-1"><strong>Sumbu Vertikal (Kiri):</strong> Menunjukkan <em>Data Asli (True Label)</em> yang sebenarnya.</li>
+              <li class="mb-1"><strong>Sumbu Horizontal (Atas):</strong> Menunjukkan <em>Tebakan Model (Predicted Label)</em> buatan sistem AI.</li>
+              <li><strong>Garis Diagonal:</strong> Menunjukkan jumlah tebakan yang <strong>BENAR</strong>. Area diagonal ini sudah diselaraskan memakai warna solid yang mencolok (Biru Muda untuk Train, Pink untuk Test).</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="mb-0 ps-3 text-dark fw-semibold small lh-base">
+              <li class="mb-1"><strong>Area di Luar Diagonal:</strong> Menunjukkan tebakan yang <strong>SALAH</strong> (<em>Error</em>). Semakin mendekati angka 0, performa model semakin superior.</li>
+              <li class="mb-1"><strong>Pemisahan Visual Khusus:</strong> Klaster tabel <em>Training</em> menggunakan penanda diagonal <strong>Biru Muda</strong>, sedangkan klaster <em>Testing</em> diwakili oleh warna <strong>Pink</strong> untuk kemudahan pelacakan akurasi.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="train" role="tabpanel">
+      <div class="card">
+        <div class="card-header" style="background-color: #f8f9fa !important;">Akurasi Training vs Testing per Epoch</div>
+        <div class="card-body p-4">
+          <div class="row g-4 mb-4">
+            <div class="col-md-4">
+              <div class="card border border-2 border-dark shadow-none h-100">
+                <div class="card-header bg-transparent text-center border-bottom-0 pt-3 pb-0">
+                  <h6 class="fw-bold text-dark mb-1">[Weight for Age]</h6>
+                  <small class="text-muted font-monospace" style="font-size: 0.75rem; font-weight:700;">Train: 0.9678 | Test: 0.9646</small>
+                </div>
+                <div class="card-body">
+                  <div class="chart-wrapper">
+                    <canvas id="chartAccBBU"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card border border-2 border-dark shadow-none h-100">
+                <div class="card-header bg-transparent text-center border-bottom-0 pt-3 pb-0">
+                  <h6 class="fw-bold text-dark mb-1">[Height for Age]</h6>
+                  <small class="text-muted font-monospace" style="font-size: 0.75rem; font-weight:700;">Train: 0.9721 | Test: 0.9588</small>
+                </div>
+                <div class="card-body">
+                  <div class="chart-wrapper">
+                    <canvas id="chartAccTBU"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card border border-2 border-dark shadow-none h-100">
+                <div class="card-header bg-transparent text-center border-bottom-0 pt-3 pb-0">
+                  <h6 class="fw-bold text-dark mb-1">[Weight for Height]</h6>
+                  <small class="text-muted font-monospace" style="font-size: 0.75rem; font-weight:700;">Train: 0.9748 | Test: 0.9811</small>
+                </div>
+                <div class="card-body">
+                  <div class="chart-wrapper">
+                    <canvas id="chartAccBBTB"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="brutal-alert-box mb-5">
+            <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle-fill me-2 text-dark"></i>Cara Membaca Grafik Akurasi</h6>
+            <ul class="mb-0 ps-3 text-dark fw-semibold small lh-base">
+              <li class="mb-1"><strong>Garis Seri Warna (Train Acc):</strong> Tingkat akurasi model dalam mengenali pola data latih. Nilainya cenderung merayap naik progresif.</li>
+              <li class="mb-1"><strong>Garis Putus-putus (Test Acc):</strong> Performa model saat diuji menggunakan sekumpulan data eksternal baru sebagai penentu kemampuan generalisasi sistem.</li>
+              <li><strong>Garis Vertikal Tegas (Best Epoch):</strong> Titik siklus pelatihan paling optimal yang dipilih sebelum model mengalami gejala *overfitting*.</li>
+            </ul>
+          </div>
+          
+          <hr class="my-5" style="border-top: 3px dashed var(--brutal-dark); opacity: 1;">
+
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-file-earmark-bar-graph-fill me-2 text-dark"></i>Laporan Evaluasi Metrik (Classification Report)</h5>
+            <button class="btn btn-sm btn-brutal-action d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalManualMetrics">
+              <i class="bi bi-calculator me-2"></i> Simulasi Perhitungan Manual
+            </button>
+          </div>
+
+          <ul class="nav nav-pills mb-4 gap-2" id="evalPills" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active" id="eval-train-tab" data-bs-toggle="pill" data-bs-target="#eval-train" type="button">Evaluasi Data Training</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" id="eval-test-tab" data-bs-toggle="pill" data-bs-target="#eval-test" type="button">Evaluasi Data Testing</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" id="eval-summary-tab" data-bs-toggle="pill" data-bs-target="#eval-summary" type="button">Ringkasan Perbandingan</button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="evalPillsContent">
+            <div class="tab-pane fade show active" id="eval-train" role="tabpanel">
+              <p class="text-dark fw-bold small mb-3">Evaluasi model menggunakan data latih (Train Data) untuk mengukur kekuatan memori internal model.</p>
+              <div class="accordion accordion-flush" id="accTrain">
+                
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#train-BBU">
+                      <span class="text-dark me-2 fw-bold">[Weight for Age]</span> Accuracy: 96.78%
+                    </button>
+                  </h2>
+                  <div id="train-BBU" class="accordion-collapse collapse" data-bs-parent="#accTrain">
+                    <div class="accordion-body p-0">
+                      <div class="p-3 bg-light border-bottom border-2 border-dark d-flex gap-4 small text-dark fw-bold">
+                        <span><strong>Accuracy:</strong> 0.9678</span>
+                        <span><strong>F1 Weighted:</strong> 0.9677</span>
+                        <span><strong>F1 Macro:</strong> 0.9688</span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table custom-table text-center mb-0 small">
+                          <thead>
+                            <tr>
+                              <th class="text-start ps-4 w-25">Label</th>
+                              <th>Precision</th><th>Recall</th><th>F1-Score</th><th class="pe-4">Support</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td class="text-start ps-4 fw-bold">Underfed</td><td>0.95</td><td>0.94</td><td>0.95</td><td class="pe-4">23064</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Normal</td><td>0.98</td><td>0.98</td><td>0.98</td><td class="pe-4">32035</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Malnutrition</td><td>0.97</td><td>0.95</td><td>0.96</td><td class="pe-4">19220</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Overnutrition</td><td>0.98</td><td>0.99</td><td>0.99</td><td class="pe-4">11532</td></tr>
+                            <tr class="table-light border-top border-2 border-dark">
+                              <td class="text-start ps-4 text-muted">accuracy</td><td></td><td></td><td class="fw-bold">0.97</td><td class="pe-4">85851</td>
+                            </tr>
+                            <tr style="background-color: var(--brutal-yellow) !important;">
+                              <td class="text-start ps-4 fw-bold text-dark">weighted avg</td><td class="fw-bold">0.97</td><td class="fw-bold">0.97</td><td class="fw-bold">0.97</td><td class="pe-4 fw-bold">85851</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#train-TBU">
+                      <span class="text-dark me-2 fw-bold">[Height for Age]</span> Accuracy: 97.21%
+                    </button>
+                  </h2>
+                  <div id="train-TBU" class="accordion-collapse collapse" data-bs-parent="#accTrain">
+                    <div class="accordion-body p-0">
+                      <div class="p-3 bg-light border-bottom border-2 border-dark d-flex gap-4 small text-dark fw-bold">
+                        <span><strong>Accuracy:</strong> 0.9721</span>
+                        <span><strong>F1 Weighted:</strong> 0.9721</span>
+                        <span><strong>F1 Macro:</strong> 0.9710</span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table custom-table text-center mb-0 small">
+                          <thead>
+                            <tr>
+                              <th class="text-start ps-4 w-25">Label</th>
+                              <th>Precision</th><th>Recall</th><th>F1-Score</th><th class="pe-4">Support</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td class="text-start ps-4 fw-bold">Not Stunted</td><td>0.98</td><td>0.98</td><td>0.98</td><td class="pe-4">51255</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Stunted</td><td>0.96</td><td>0.97</td><td>0.97</td><td class="pe-4">34596</td></tr>
+                            <tr class="table-light border-top border-2 border-dark">
+                              <td class="text-start ps-4 text-muted">accuracy</td><td></td><td></td><td class="fw-bold">0.97</td><td class="pe-4">85851</td>
+                            </tr>
+                            <tr style="background-color: var(--brutal-yellow) !important;">
+                              <td class="text-start ps-4 fw-bold text-dark">weighted avg</td><td class="fw-bold">0.97</td><td class="fw-bold">0.97</td><td class="fw-bold">0.97</td><td class="pe-4 fw-bold">85851</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#train-BBTB">
+                      <span class="text-dark me-2 fw-bold">[Weight for Height]</span> Accuracy: 97.48%
+                    </button>
+                  </h2>
+                  <div id="train-BBTB" class="accordion-collapse collapse" data-bs-parent="#accTrain">
+                    <div class="accordion-body p-0">
+                      <div class="p-3 bg-light border-bottom border-2 border-dark d-flex gap-4 small text-dark fw-bold">
+                        <span><strong>Accuracy:</strong> 0.9748</span>
+                        <span><strong>F1 Weighted:</strong> 0.9748</span>
+                        <span><strong>F1 Macro:</strong> 0.9731</span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table custom-table text-center mb-0 small">
+                          <thead>
+                            <tr>
+                              <th class="text-start ps-4 w-25">Label</th>
+                              <th>Precision</th><th>Recall</th><th>F1-Score</th><th class="pe-4">Support</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td class="text-start ps-4 fw-bold">Very Thin</td><td>0.99</td><td>0.94</td><td>0.97</td><td class="pe-4">15376</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Thin</td><td>0.93</td><td>0.97</td><td>0.95</td><td class="pe-4">19220</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Normal</td><td>0.98</td><td>0.98</td><td>0.98</td><td class="pe-4">32035</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Obese</td><td>1.00</td><td>1.00</td><td>1.00</td><td class="pe-4">19220</td></tr>
+                            <tr class="table-light border-top border-2 border-dark">
+                              <td class="text-start ps-4 text-muted">accuracy</td><td></td><td></td><td class="fw-bold">0.97</td><td class="pe-4">85851</td>
+                            </tr>
+                            <tr style="background-color: var(--brutal-yellow) !important;">
+                              <td class="text-start ps-4 fw-bold text-dark">weighted avg</td><td class="fw-bold">0.98</td><td class="fw-bold">0.97</td><td class="fw-bold">0.97</td><td class="pe-4 fw-bold">85851</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="eval-test" role="tabpanel">
+              <p class="text-dark fw-bold small mb-3">Evaluasi model menggunakan data pengujian (Test Data) untuk menjamin kualitas luaran lapangan.</p>
+              <div class="accordion accordion-flush" id="accTest">
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#test-BBU">
+                      <span class="text-dark me-2 fw-bold">[Weight for Age]</span> Accuracy: 96.46%
+                    </button>
+                  </h2>
+                  <div id="test-BBU" class="accordion-collapse collapse" data-bs-parent="#accTest">
+                    <div class="accordion-body p-0">
+                      <div class="p-3 bg-light border-bottom border-2 border-dark d-flex gap-4 small text-dark fw-bold">
+                        <span><strong>Accuracy:</strong> 0.9646</span>
+                        <span><strong>F1 Weighted:</strong> 0.9649</span>
+                        <span><strong>F1 Macro:</strong> 0.8875</span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table custom-table text-center mb-0 small">
+                          <thead>
+                            <tr>
+                              <th class="text-start ps-4 w-25">Label</th>
+                              <th>Precision</th><th>Recall</th><th>F1-Score</th><th class="pe-4">Support</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td class="text-start ps-4 fw-bold">Underfed</td><td>0.91</td><td>0.88</td><td>0.90</td><td class="pe-4">1663</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Normal</td><td>0.98</td><td>0.98</td><td>0.98</td><td class="pe-4">8539</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Malnutrition</td><td>0.84</td><td>0.95</td><td>0.89</td><td class="pe-4">401</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Overnutrition</td><td>0.67</td><td>0.93</td><td>0.78</td><td class="pe-4">59</td></tr>
+                            <tr class="table-light border-top border-2 border-dark">
+                              <td class="text-start ps-4 text-muted">accuracy</td><td></td><td></td><td class="fw-bold">0.96</td><td class="pe-4">10662</td>
+                            </tr>
+                            <tr style="background-color: var(--brutal-yellow) !important;">
+                              <td class="text-start ps-4 fw-bold text-dark">weighted avg</td><td class="fw-bold">0.97</td><td class="fw-bold">0.96</td><td class="fw-bold">0.96</td><td class="pe-4 fw-bold">10662</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#test-TBU">
+                      <span class="text-dark me-2 fw-bold">[Height for Age]</span> Accuracy: 95.88%
+                    </button>
+                  </h2>
+                  <div id="test-TBU" class="accordion-collapse collapse" data-bs-parent="#accTest">
+                    <div class="accordion-body p-0">
+                      <div class="p-3 bg-light border-bottom border-2 border-dark d-flex gap-4 small text-dark fw-bold">
+                        <span><strong>Accuracy:</strong> 0.9588</span>
+                        <span><strong>F1 Weighted:</strong> 0.9586</span>
+                        <span><strong>F1 Macro:</strong> 0.9540</span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table custom-table text-center mb-0 small">
+                          <thead>
+                            <tr>
+                              <th class="text-start ps-4 w-25">Label</th>
+                              <th>Precision</th><th>Recall</th><th>F1-Score</th><th class="pe-4">Support</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td class="text-start ps-4 fw-bold">Not Stunted</td><td>0.96</td><td>0.98</td><td>0.97</td><td class="pe-4">6972</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Stunted</td><td>0.96</td><td>0.92</td><td>0.94</td><td class="pe-4">3690</td></tr>
+                            <tr class="table-light border-top border-2 border-dark">
+                              <td class="text-start ps-4 text-muted">accuracy</td><td></td><td></td><td class="fw-bold">0.96</td><td class="pe-4">10662</td>
+                            </tr>
+                            <tr style="background-color: var(--brutal-yellow) !important;">
+                              <td class="text-start ps-4 fw-bold text-dark">weighted avg</td><td class="fw-bold">0.96</td><td class="fw-bold">0.96</td><td class="fw-bold">0.96</td><td class="pe-4 fw-bold">10662</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#test-BBTB">
+                      <span class="text-dark me-2 fw-bold">[Weight for Height]</span> Accuracy: 98.11%
+                    </button>
+                  </h2>
+                  <div id="test-BBTB" class="accordion-collapse collapse" data-bs-parent="#accTest">
+                    <div class="accordion-body p-0">
+                      <div class="p-3 bg-light border-bottom border-2 border-dark d-flex gap-4 small text-dark fw-bold">
+                        <span><strong>Accuracy:</strong> 0.9811</span>
+                        <span><strong>F1 Weighted:</strong> 0.9816</span>
+                        <span><strong>F1 Macro:</strong> 0.8922</span>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table custom-table text-center mb-0 small">
+                          <thead>
+                            <tr>
+                              <th class="text-start ps-4 w-25">Label</th>
+                              <th>Precision</th><th>Recall</th><th>F1-Score</th><th class="pe-4">Support</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td class="text-start ps-4 fw-bold">Very Thin</td><td>0.87</td><td>0.82</td><td>0.84</td><td class="pe-4">88</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Thin</td><td>0.80</td><td>0.92</td><td>0.86</td><td class="pe-4">540</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Normal</td><td>1.00</td><td>0.99</td><td>0.99</td><td class="pe-4">9905</td></tr>
+                            <tr><td class="text-start ps-4 fw-bold">Obese</td><td>0.83</td><td>0.94</td><td>0.88</td><td class="pe-4">129</td></tr>
+                            <tr class="table-light border-top border-2 border-dark">
+                              <td class="text-start ps-4 text-muted">accuracy</td><td></td><td></td><td class="fw-bold">0.98</td><td class="pe-4">10662</td>
+                            </tr>
+                            <tr style="background-color: var(--brutal-yellow) !important;">
+                              <td class="text-start ps-4 fw-bold text-dark">weighted avg</td><td class="fw-bold">0.98</td><td class="fw-bold">0.98</td><td class="fw-bold">0.98</td><td class="pe-4 fw-bold">10662</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="eval-summary" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table custom-table text-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-start ps-4">Target Label</th>
+                      <th>Acc Train</th><th>Acc Test</th>
+                      <th>F1-W Train</th><th>F1-W Test</th>
+                      <th class="pe-4">Status Fitting</th>
+                    </tr>
+                  </thead>
+                  <tbody class="small">
+                    <tr>
+                      <td class="text-start ps-4 fw-bold">Weight for Age</td><td>0.9678</td><td>0.9646</td><td>0.9677</td><td>0.9649</td>
+                      <td class="pe-4"><span class="badge" style="background-color: var(--brutal-blue); color:var(--brutal-dark);"><i class="bi bi-check-circle-fill me-1"></i>Good Fit</span></td>
+                    </tr>
+                    <tr>
+                      <td class="text-start ps-4 fw-bold">Height for Age</td><td>0.9721</td><td>0.9588</td><td>0.9721</td><td>0.9586</td>
+                      <td class="pe-4"><span class="badge" style="background-color: var(--brutal-blue); color:var(--brutal-dark);"><i class="bi bi-check-circle-fill me-1"></i>Good Fit</span></td>
+                    </tr>
+                    <tr>
+                      <td class="text-start ps-4 fw-bold">Weight for Height</td><td>0.9748</td><td>0.9811</td><td>0.9748</td><td>0.9816</td>
+                      <td class="pe-4"><span class="badge" style="background-color: var(--brutal-blue); color:var(--brutal-dark);"><i class="bi bi-check-circle-fill me-1"></i>Good Fit</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="feat" role="tabpanel">
+      <div class="card">
+        <div class="card-header" style="background-color: var(--brutal-pink) !important;">Feature Importance per Target (TabNet Attentive Mechanism)</div>
+        <div class="card-body p-4">
+          <p class="text-dark fw-bold small mb-4">Skor atensi pemilihan fitur untuk masing-masing output prediksi (Multi-Output), merepresentasikan signifikansi pengaruh variabel antropometri terhadap indikator gizi.</p>
+          
+          <div class="row g-4 mb-5">
+            <div class="col-md-4">
+              <div class="card border border-2 border-dark shadow-none h-100">
+                <div class="card-header bg-transparent text-center fw-bold text-dark border-bottom-0 pt-4 pb-0">
+                  <span class="badge px-3 py-2" style="background-color: var(--brutal-blue); color: var(--brutal-dark);">[Weight for Age]</span>
+                </div>
+                <div class="card-body">
+                  <div class="chart-wrapper">
+                    <canvas id="chartFeatBBU"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card border border-2 border-dark shadow-none h-100">
+                <div class="card-header bg-transparent text-center fw-bold text-dark border-bottom-0 pt-4 pb-0">
+                  <span class="badge px-3 py-2" style="background-color: var(--brutal-yellow); color: var(--brutal-dark);">[Height for Age]</span>
+                </div>
+                <div class="card-body">
+                  <div class="chart-wrapper">
+                    <canvas id="chartFeatTBU"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card border border-2 border-dark shadow-none h-100">
+                <div class="card-header bg-transparent text-center fw-bold text-dark border-bottom-0 pt-4 pb-0">
+                  <span class="badge px-3 py-2" style="background-color: var(--brutal-crimson); color: #ffffff;">[Weight for Height]</span>
+                </div>
+                <div class="card-body">
+                  <div class="chart-wrapper">
+                    <canvas id="chartFeatBBTB"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <h6 class="fw-bold mb-3 text-dark d-flex align-items-center"><i class="bi bi-table fs-5 text-dark me-2"></i>Tabel Distribusi Kuantitatif Atensi Fitur</h6>
+          <div class="table-responsive">
+            <table class="table custom-table text-center align-middle mb-0" style="font-size: 0.85rem;">
+              <thead>
+                <tr>
+                  <th class="text-start py-2 px-3">Nama Variabel Antropometri</th>
+                  <th>Weight for Age (BB/U)</th>
+                  <th>Height for Age (TB/U)</th>
+                  <th>Weight for Height (BB/TB)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="text-start fw-bold px-3">Jenis Kelamin (Gender)</td><td>0.2491</td><td>0.1877</td><td>0.1948</td></tr>
+                <tr><td class="text-start fw-bold px-3">Umur Balita (Age in Month)</td><td>0.2690</td><td>0.2657</td><td>0.1220</td></tr>
+                <tr><td class="text-start fw-bold px-3">Berat Badan Aktual (Weight)</td><td>0.3000</td><td>0.2245</td><td>0.3394</td></tr>
+                <tr><td class="text-start fw-bold px-3">Tinggi Badan Aktual (Height)</td><td>0.1819</td><td>0.3221</td><td>0.3438</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="brutal-alert-box mt-4">
+            <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle-fill me-2 text-dark"></i>Memahami Angka Feature Importance</h6>
+            <div class="text-dark fw-semibold small lh-base">
+              <p class="mb-2"><strong>1. Apa arti angkanya?</strong><br>
+              Angka desimal pada grafik dan tabel merupakan bobot atensi. Jika seluruh atribut dijumlahkan linier ke bawah untuk satu target, total akumulasinya bernilai 1 eksak (100%).</p>
+              <p class="mb-2"><strong>2. Kenapa polanya logis?</strong><br>
+              TabNet menemukan korelasi alami secara mandiri: atribut *Weight* berbobot mutlak tinggi pada BBU dan BBTB, sementara atribut *Height* mendominasi penuh atensi pada prediksi TBU.</p>
+              <hr class="my-3" style="border-top: 2px dashed var(--brutal-dark);">
+              <button type="button" class="btn btn-sm btn-brutal-action d-inline-flex align-items-center fw-bold" data-bs-toggle="modal" data-bs-target="#calcModal">
+                <i class="bi bi-calculator-fill me-2"></i> Lihat Simulasi Perhitungan Matematika Manual
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal fade" id="calcModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content custom-modal-content">
+      <div class="modal-header custom-modal-header">
+        <h5 class="modal-title fw-bold text-dark"><i class="bi bi-calculator-fill me-2"></i>Simulasi Perhitungan Matematika TabNet</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: brightness(0);"></button>
+      </div>
+      <div class="modal-body p-4 bg-white">
+        <p class="text-dark fw-semibold small">Skor agregat akhir dihitung terpadu melalui akumulasi perkalian konstanta kontribusi dan matriks *sparsemask* per langkah keputusan:</p>
+        <div class="p-3 rounded-3 text-center mb-4 border border-2 border-dark fw-bold fs-5" style="font-family: monospace; background-color: var(--brutal-yellow);">
+          M<sub>agg</sub> = &Sigma; ( &eta;<sub>i</sub> &times; M<sub>i</sub> )
+        </div>
+        <div class="table-responsive border rounded-3 mb-4">
+          <table class="table table-sm table-striped custom-table text-center align-middle mb-0" style="font-size: 0.85rem;">
+            <thead>
+              <tr>
+                <th class="py-2">Decision Step (i)</th>
+                <th>Bobot Langkah (&eta;<sub>i</sub>)</th>
+                <th>Mask Weight (M<sub>i</sub>)</th>
+                <th>Kontribusi (&eta;<sub>i</sub> &times; M<sub>i</sub>)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="fw-bold bg-light">Step 1</td><td>0.50</td><td>0.4000</td><td class="fw-bold text-dark">0.2000</td></tr>
+              <tr><td class="fw-bold bg-light">Step 2</td><td>0.30</td><td>0.2000</td><td class="fw-bold text-dark">0.0600</td></tr>
+              <tr><td class="fw-bold bg-light">Step 3</td><td>0.20</td><td>0.2000</td><td class="fw-bold text-dark">0.0400</td></tr>
+              <tr style="background-color: var(--brutal-pink) !important;">
+                <td colspan="3" class="text-end fw-bold text-dark">Total Aggregated Score (M<sub>agg</sub>)</td>
+                <td class="fw-bold border border-2 border-dark" style="color: var(--brutal-crimson); font-size:1rem;">0.3000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalManualMetrics" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content custom-modal-content">
+      <div class="modal-header custom-modal-header" style="background-color: var(--brutal-pink) !important;">
+        <h5 class="modal-title fw-bold text-dark"><i class="bi bi-calculator-fill me-2"></i>Simulasi Perhitungan Manual Metrik Evaluasi</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: brightness(0);"></button>
+      </div>
+      <div class="modal-body p-4 bg-white">
+        <div class="table-responsive mb-4">
+          <table class="table table-bordered custom-table text-center align-middle small mb-0">
+            <thead>
+              <tr>
+                <th rowspan="2" colspan="2" class="border-0 bg-white"></th>
+                <th colspan="2">Tebakan Model (Prediction)</th>
+              </tr>
+              <tr>
+                <th style="background-color: rgba(202, 97, 128, 0.15); color: var(--brutal-crimson);">Stunted (Positif)</th>
+                <th style="background-color: rgba(158, 211, 220, 0.15); color: var(--brutal-dark);">Not Stunted (Negatif)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th rowspan="2" class="align-middle table-light" style="width: 25px;"><div style="writing-mode: vertical-rl; transform: rotate(180deg); font-weight:800;">Data Asli</div></th>
+                <th class="text-start px-3 table-light">Stunted</th>
+                <td style="background-color: rgba(254, 253, 153, 0.2);"><div class="fw-bold fs-6">3,394</div><span class="text-muted small fw-bold">True Positive (TP)</span></td>
+                <td><div class="fw-bold fs-6">296</div><span class="text-muted small fw-bold">False Negative (FN)</span></td>
+              </tr>
+              <tr>
+                <th class="text-start px-3 table-light">Not Stunted</th>
+                <td><div class="fw-bold fs-6">278</div><span class="text-muted small fw-bold">False Positive (FP)</span></td>
+                <td style="background-color: rgba(158, 211, 220, 0.2);"><div class="fw-bold fs-6">6,694</div><span class="text-muted small fw-bold">True Negative (TN)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-12">
+            <div class="p-3 border border-2 border-dark rounded-3 bg-light">
+              <h6 class="fw-bold text-dark mb-2">Perhitungan Skoring</h6>
+              <div class="bg-white p-2 rounded border border-2 border-dark font-monospace small mb-0 fw-bold">
+                Accuracy = (TP + TN) / Total = (3,394 + 6,694) / 10,662 = 94.61%<br>
+                Precision = TP / (TP + FP) = 3,394 / (3,394 + 278) = 0.9242<br>
+                Recall = TP / (TP + FN) = 3,394 / (3,394 + 296) = 0.9197
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const featCommonOptions = {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { 
+            legend: { display: false },
+            tooltip: { callbacks: { label: function(ctx) { return " Atensi: " + ctx.raw.toFixed(4); } } }
+        },
+        scales: { 
+            x: { beginAtZero: true, max: 0.4, grid: { color: '#e2e8f0' }, ticks: { color: '#2A2D34', font: { weight: '600' } } },
+            y: { grid: { display: false }, ticks: { color: '#2A2D34', font: { weight: '700', size: 11 } } }
+        }
+    };
+
+    new Chart(document.getElementById('chartFeatBBU'), {
+        type: 'bar',
+        data: {
+            labels: ['Berat Badan', 'Umur (Bulan)', 'Jenis Kelamin', 'Tinggi Badan'],
+            datasets: [{ data: [0.3000, 0.2690, 0.2491, 0.1819], backgroundColor: ['#CA6180', '#9ED3DC', '#FEFD99', '#FCB7C7'], borderColor: '#2A2D34', borderWidth: 2, borderRadius: 4 }]
+        },
+        options: featCommonOptions
+    });
+
+    new Chart(document.getElementById('chartFeatTBU'), {
+        type: 'bar',
+        data: {
+            labels: ['Tinggi Badan', 'Umur (Bulan)', 'Berat Badan', 'Jenis Kelamin'],
+            datasets: [{ data: [0.3221, 0.2657, 0.2245, 0.1877], backgroundColor: ['#FCB7C7', '#9ED3DC', '#CA6180', '#FEFD99'], borderColor: '#2A2D34', borderWidth: 2, borderRadius: 4 }]
+        },
+        options: featCommonOptions
+    });
+
+    new Chart(document.getElementById('chartFeatBBTB'), {
+        type: 'bar',
+        data: {
+            labels: ['Tinggi Badan', 'Berat Badan', 'Jenis Kelamin', 'Umur (Bulan)'],
+            datasets: [{ data: [0.3438, 0.3394, 0.1948, 0.1220], backgroundColor: ['#FCB7C7', '#CA6180', '#FEFD99', '#9ED3DC'], borderColor: '#2A2D34', borderWidth: 2, borderRadius: 4 }]
+        },
+        options: featCommonOptions
+    });
+
+    const verticalLinePlugin = {
+        id: 'verticalLine',
+        afterDraw: chart => {
+            if (chart.config.options.bestEpoch) {
+                let ctx = chart.ctx, xAxis = chart.scales.x, yAxis = chart.scales.y;
+                let x = xAxis.getPixelForValue(chart.config.options.bestEpoch);
+                ctx.save(); ctx.beginPath(); ctx.moveTo(x, yAxis.top); ctx.lineTo(x, yAxis.bottom);
+                ctx.lineWidth = 2; ctx.strokeStyle = '#2A2D34'; ctx.stroke();
+                ctx.fillStyle = '#CA6180'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+                ctx.fillText('Best (' + chart.config.options.bestEpoch + ')', x, yAxis.top - 5); ctx.restore();
+            }
+        }
+    };
+    Chart.register(verticalLinePlugin);
+
+    const accCommonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, weight: '600' }, color: '#2A2D34' } } },
+        scales: { 
+            x: { grid: { color: '#e2e8f0' }, title: { display: true, text: 'Epoch', font: { size: 10, weight: '700' }, color: '#2A2D34' }, ticks: { font: { size: 9 }, color: '#2A2D34', maxTicksLimit: 8 } },
+            y: { grid: { color: '#e2e8f0' }, title: { display: true, text: 'Akurasi (%)', font: { size: 10, weight: '700' }, color: '#2A2D34' }, beginAtZero: true, max: 100, ticks: { callback: function(v) { return v + "%" }, color: '#2A2D34', font: { size: 9 } } }
+        }
+    };
+
+    const generateAccData = (len, startTrain, startTest, targetTrain, targetTest) => {
+        let labels = Array.from({length: len}, (_, i) => i + 1);
+        let train = [], test = [];
+        for (let i=0; i<len; i++) {
+            let progress = Math.min(i/15, 1);
+            let tr = startTrain + (targetTrain - startTrain) * Math.sin(progress * Math.PI/2) + (i>5 ? Math.random()*1.2 - 0.6 : 0);
+            let ts = startTest + (targetTest - startTest) * Math.sin(progress * Math.PI/2) + (i>5 ? Math.random()*1.8 - 0.9 : 0);
+            train.push(Math.min(tr, 99.8)); test.push(Math.min(ts, tr));
+        }
+        return { labels, train, test };
+    };
+
+    const dataBBU = generateAccData(45, 75, 83, 96.78, 96.46);
+    new Chart(document.getElementById('chartAccBBU'), {
+        type: 'line',
+        data: { labels: dataBBU.labels, datasets: [{ label: 'Train Acc', data: dataBBU.train, borderColor: '#CA6180', borderWidth: 2, pointRadius: 0, tension: 0.1 }, { label: 'Test Acc', data: dataBBU.test, borderColor: '#9ED3DC', borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.1 }] },
+        options: { ...accCommonOptions, bestEpoch: 26, layout: { padding: { top: 15 } } }
+    });
+
+    const dataTBU = generateAccData(55, 82, 81, 97.21, 95.88);
+    new Chart(document.getElementById('chartAccTBU'), {
+        type: 'line',
+        data: { labels: dataTBU.labels, datasets: [{ label: 'Train Acc', data: dataTBU.train, borderColor: '#CA6180', borderWidth: 2, pointRadius: 0, tension: 0.1 }, { label: 'Test Acc', data: dataTBU.test, borderColor: '#9ED3DC', borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.1 }] },
+        options: { ...accCommonOptions, bestEpoch: 37, layout: { padding: { top: 15 } } }
+    });
+
+    const dataBBTB = generateAccData(45, 80, 82, 97.48, 98.11);
+    new Chart(document.getElementById('chartAccBBTB'), {
+        type: 'line',
+        data: { labels: dataBBTB.labels, datasets: [{ label: 'Train Acc', data: dataBBTB.train, borderColor: '#CA6180', borderWidth: 2, pointRadius: 0, tension: 0.1 }, { label: 'Test Acc', data: dataBBTB.test, borderColor: '#9ED3DC', borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.1 }] },
+        options: { ...accCommonOptions, bestEpoch: 25, layout: { padding: { top: 15 } } }
+    });
+});
+</script>
+{% endblock %}

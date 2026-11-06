@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% block title %}Riwayat Pemeriksaan — GiziLens{% endblock %}
+{% block page_title %}<i class="bi bi-clock-history me-2"></i>Riwayat Pemeriksaan{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3 py-3" style="background-color: #CA6180; border: none;">
+    <div>
+      <span class="fw-bold text-white fs-5">Semua Data Pemeriksaan</span>
+      <span class="badge bg-light ms-2 fw-bold" style="color: #CA6180; border-radius: 6px;">{{ total }} total</span>
+    </div>
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+      <div class="d-flex gap-2 mb-0">
+        <div class="input-group input-group-sm" style="max-width:260px">
+          <input type="text" id="searchInput" class="form-control"
+                 placeholder="Cari Nama Balita..." value="{{ search }}" style="border-radius: 8px;" autocomplete="off"/>
+        </div>
+        <a href="{{ url_for('riwayat') }}" id="btnResetSearch" class="btn btn-sm btn-light {% if not search %}d-none{% endif %}" style="color: #CA6180; border-radius: 8px;">
+          <i class="bi bi-x-lg"></i>
+        </a>
+      </div>
+      <button type="button" class="btn btn-sm btn-light fw-bold text-danger" style="border-radius: 8px;" onclick="hapusSemua()">
+        <i class="bi bi-trash me-1"></i>Hapus Semua
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead style="background-color: #f8f9fa;">
+          <tr style="border-bottom: 2px solid #dee2e6; vertical-align: middle;">
+            <th class="ps-3 py-3">Nama Balita</th>
+            <th>Jenis Kelamin</th>
+            <th>Umur (bulan)</th>
+            <th>BB (kg)</th>
+            <th>TB (cm)</th>
+            <th>BB/U</th>
+            <th>TB/U</th>
+            <th>BB/TB</th>
+            <th>Petugas</th>
+            <th>Tanggal</th>
+            <th class="pe-3 text-center" style="width:100px">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr style="border-bottom: 1px solid #eee; vertical-align: middle;">
+            <td class="fw-semibold ps-3">{{ r.nama_balita }}</td>
+            <td>
+              {% if r.jenis_kelamin == 'L' or r.jenis_kelamin == 'Laki-laki' %}
+                <span class="badge rounded-pill" style="background: #9ED3DC; color: #000; border: 1px solid #7ebbc5; width: 90px;">Laki-laki</span>
+              {% else %}
+                <span class="badge rounded-pill" style="background: #FCB7C7; color: #000; border: 1px solid #e5a4b3; width: 90px;">Perempuan</span>
+              {% endif %}
+            </td>
+            <td>{{ r.umur_bulan }}</td>
+            <td class="fw-medium">{{ r.berat_badan }}</td>
+            <td class="fw-medium">{{ r.tinggi_badan }}</td>
+            
+            <td>
+              {% set bbu = r.bbu_label or '-' %}
+              {% if bbu != '-' %}
+              <span class="badge rounded-pill" 
+                style="background: {% if bbu=='Normal' %}#9ED3DC{% elif bbu=='Underfed' %}#FEFD99{% elif bbu=='Malnutrition' %}#CA6180{% elif bbu=='Overnutrition' %}#FCB7C7{% else %}#D1D5DB{% endif %}; 
+                       color: {% if bbu=='Malnutrition' %}#fff{% else %}#000{% endif %};
+                       border: 1px solid rgba(0,0,0,0.1); width: 95px;">
+                {{ bbu }}
+              </span>
+              {% else %}<span class="text-muted">-</span>{% endif %}
+            </td>
+
+            <td>
+              {% set tbu = r.tbu_label or '-' %}
+              {% if tbu != '-' %}
+              <span class="badge rounded-pill" 
+                style="background: {% if tbu in ['Normal', 'Not Stunted'] %}#9ED3DC{% elif tbu=='Stunted' %}#CA6180{% else %}#D1D5DB{% endif %}; 
+                       color: {% if tbu=='Stunted' %}#fff{% else %}#000{% endif %};
+                       border: 1px solid rgba(0,0,0,0.1); width: 95px;">
+                {{ 'Normal' if tbu == 'Not Stunted' else tbu }}
+              </span>
+              {% else %}<span class="text-muted">-</span>{% endif %}
+            </td>
+
+            <td>
+              {% set bbtb = r.bbtb_label or '-' %}
+              {% if bbtb != '-' %}
+              <span class="badge rounded-pill" 
+                style="background: {% if bbtb=='Normal' %}#9ED3DC{% elif bbtb=='Thin' %}#FEFD99{% elif bbtb=='Very Thin' %}#CA6180{% elif bbtb=='Obese' %}#FCB7C7{% else %}#D1D5DB{% endif %}; 
+                       color: {% if bbtb=='Very Thin' %}#fff{% else %}#000{% endif %};
+                       border: 1px solid rgba(0,0,0,0.1); width: 95px;">
+                {{ bbtb }}
+              </span>
+              {% else %}<span class="text-muted">-</span>{% endif %}
+            </td>
+
+            <td class="text-muted" style="font-size:.85rem">{{ r.nama_petugas or '-' }}</td>
+            <td class="text-muted" style="font-size:.85rem">
+              {{ r.tanggal_periksa.strftime('%d/%m/%Y') if r.tanggal_periksa else '-' }}
+            </td>
+            <td class="pe-3 text-center">
+              <div class="d-flex gap-1 justify-content-center">
+                <a href="{{ url_for('hasil', pemeriksaan_id=r.id) }}"
+                   class="btn btn-sm btn-outline-secondary" style="border-radius: 6px;" title="Lihat Detail">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <button onclick="hapusData({{ r.id }})"
+                        class="btn btn-sm btn-outline-danger" style="border-radius: 6px;" title="Hapus Data">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="11" class="text-center py-5 text-muted">
+              <i class="bi bi-inbox fs-3 d-block mb-2 opacity-50"></i>
+              {% if search %}Tidak ada hasil untuk "{{ search }}"
+              {% else %}Belum ada data pemeriksaan{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if total_pages > 1 %}
+  <div class="card-footer d-flex justify-content-between align-items-center bg-white border-top py-3">
+    <small class="text-muted fw-medium">
+      Halaman {{ page }} dari {{ total_pages }} ({{ total }} data)
+    </small>
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item {{ 'disabled' if page == 1 }}">
+          <a class="page-link" href="?page={{ page-1 }}{% if search %}&search={{ search }}{% endif %}" style="border-radius: 6px 0 0 6px;">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </li>
+        {% for p in range([1, page-2]|max, [total_pages+1, page+3]|min) %}
+        <li class="page-item {{ 'active' if p == page }}">
+          <a class="page-link" href="?page={{ p }}{% if search %}&search={{ search }}{% endif %}" 
+             style="{{ 'background-color:#CA6180; border-color:#CA6180;' if p == page else '' }}">
+            {{ p }}
+          </a>
+        </li>
+        {% endfor %}
+        <li class="page-item {{ 'disabled' if page == total_pages }}">
+          <a class="page-link" href="?page={{ page+1 }}{% if search %}&search={{ search }}{% endif %}" style="border-radius: 0 6px 6px 0;">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Penanganan Pencarian Otomatis (Real-time Filter dengan Debounce)
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.getElementById('searchInput');
+  const btnResetSearch = document.getElementById('btnResetSearch');
+  let debounceTimeout;
+
+  if (searchInput) {
+    // Mempertahankan fokus kursor di akhir huruf setelah halaman reload
+    searchInput.focus();
+    const val = searchInput.value;
+    searchInput.value = '';
+    searchInput.value = val;
+
+    searchInput.addEventListener('input', function (e) {
+      const keyword = e.target.value.trim();
+
+      // Reset timer debounce setiap kali ada input huruf baru
+      clearTimeout(debounceTimeout);
+
+      // Trigger pencarian otomatis setelah jeda mengetik 300ms
+      debounceTimeout = setTimeout(() => {
+        if (keyword.length > 0) {
+          btnResetSearch.classList.remove('d-none');
+        } else {
+          btnResetSearch.classList.add('d-none');
+        }
+        // Redirect ke halaman 1 dengan parameter pencarian terbaru
+        window.location.href = `?page=1&search=${encodeURIComponent(keyword)}`;
+      }, 300);
+    });
+  }
+});
+
+// SweetAlert2 confirmation untuk hapus satu baris data
+async function hapusData(id) {
+  const result = await Swal.fire({
+    icon: 'warning',
+    title: 'Apakah Anda yakin?',
+    text: 'Data pemeriksaan ini akan dihapus secara permanen.',
+    showCancelButton: true,
+    confirmButtonColor: '#9B4864',
+    cancelButtonColor: '#9ED3DC',
+    confirmButtonText: 'Ya, Hapus',
+    cancelButtonText: 'Batal',
+    backdrop: true,
+    allowOutsideClick: false
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const res = await fetch(`/api/pemeriksaan/hapus/${id}`, { method:'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Data pemeriksaan telah dihapus.',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      location.reload();
+    } else {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Gagal menghapus data pemeriksaan.'
+      });
+    }
+  } catch(e) {
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Terjadi kesalahan: ' + e.message
+    });
+  }
+}
+
+// SweetAlert2 confirmation untuk hapus semua riwayat (Bulk Delete)
+async function hapusSemua() {
+  const result = await Swal.fire({
+    icon: 'warning',
+    title: 'Hapus Semua Data Riwayat?',
+    html: '<p>Anda akan menghapus <strong>semua</strong> data riwayat pemeriksaan. Tindakan ini <strong>tidak dapat dibatalkan</strong>.</p>',
+    showCancelButton: true,
+    confirmButtonColor: '#9B4864',
+    cancelButtonColor: '#9ED3DC',
+    confirmButtonText: 'Ya, Hapus Semua',
+    cancelButtonText: 'Batal',
+    backdrop: true,
+    allowOutsideClick: false
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const res = await fetch('/api/pemeriksaan/hapus_semua', { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Semua data riwayat pemeriksaan telah dihapus.',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      location.reload();
+    } else {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Gagal menghapus data: ' + (data.message || 'Kesalahan tidak diketahui')
+      });
+    }
+  } catch (e) {
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Terjadi kesalahan: ' + e.message
+    });
+  }
+}
+</script>
+{% endblock %}

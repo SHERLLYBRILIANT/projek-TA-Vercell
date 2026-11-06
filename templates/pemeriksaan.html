@@ -1,0 +1,872 @@
+{% extends "base.html" %}
+{% block title %}Input Pemeriksaan — GiziLens{% endblock %}
+{% block page_title %}<i class="bi bi-clipboard2-pulse me-2"></i>Input Pemeriksaan{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --brutal-blue: #9ED3DC;
+    --brutal-yellow: #FEFD99;
+    --brutal-pink: #FCB7C7;
+    --brutal-crimson: #CA6180;
+    --brutal-dark: #2A2D34;
+    --brutal-blue-darker: #7cb8c2;
+    --brutal-crimson-darker: #ad4b67;
+  }
+
+  /* Elemen Kartu Utama (Neo-Brutalism) */
+  .card {
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 12px !important;
+    box-shadow: 4px 4px 0px var(--brutal-dark) !important;
+    overflow: hidden;
+    background-color: #ffffff;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .card-header {
+    border-bottom: 3px solid var(--brutal-dark) !important;
+    padding: 1rem 1.25rem !important;
+    color: var(--brutal-dark) !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem;
+  }
+
+  /* Distribusi warna header kartu */
+  .form-input-card .card-header {
+    background-color: var(--brutal-blue) !important;
+  }
+  .result-card .card-header {
+    background-color: var(--brutal-pink) !important;
+  }
+  .table-card .card-header {
+    background-color: var(--brutal-yellow) !important;
+  }
+
+  /* Input fields & Select */
+  input.form-control, textarea.form-control, select.form-select, .input-group-text {
+    border: 2px solid var(--brutal-dark) !important;
+    border-radius: 8px !important;
+    color: var(--brutal-dark) !important;
+    font-weight: 600;
+  }
+  input.form-control:focus, textarea.form-control:focus, select.form-select:focus {
+    box-shadow: none !important;
+    background-color: rgba(254, 253, 153, 0.15); /* Soft yellow focus */
+    border-color: var(--brutal-dark) !important;
+  }
+  .input-group-text {
+    background-color: var(--brutal-pink) !important;
+    font-weight: 700;
+  }
+
+  /* Tombol Utama */
+  .btn-brutal-primary {
+    background-color: var(--brutal-crimson) !important;
+    color: #ffffff !important;
+    border: 2px solid var(--brutal-dark) !important;
+    border-radius: 8px !important;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 3px 3px 0px var(--brutal-dark);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .btn-brutal-primary:hover {
+    background-color: var(--brutal-crimson-darker) !important;
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0px var(--brutal-dark);
+  }
+
+  /* Tombol Tambah Balita Singkat */
+  .btn-brutal-add {
+    background-color: var(--brutal-yellow) !important;
+    border: 2px solid var(--brutal-dark) !important;
+    color: var(--brutal-dark) !important;
+    font-weight: 700;
+    box-shadow: 2px 2px 0px var(--brutal-dark);
+  }
+  .btn-brutal-add:hover {
+    background-color: #e5e478 !important;
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--brutal-dark);
+  }
+
+  /* Modifikasi Desain Tabel */
+  .custom-table {
+    border-collapse: collapse;
+  }
+  .custom-table thead {
+    border-bottom: 3px solid var(--brutal-dark) !important;
+    background-color: #f8f9fa;
+  }
+  .custom-table th {
+    color: var(--brutal-dark) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    padding: 12px 16px !important;
+    border-bottom: 3px solid var(--brutal-dark) !important;
+  }
+  .custom-table td {
+    padding: 12px 16px !important;
+    vertical-align: middle;
+    font-weight: 500;
+    border-bottom: 2px solid var(--brutal-dark) !important;
+  }
+  .custom-table tbody tr:hover {
+    background-color: rgba(158, 211, 192, 0.15) !important;
+  }
+
+  /* Badges */
+  .brutal-badge-model {
+    background-color: var(--brutal-yellow) !important;
+    color: var(--brutal-dark) !important;
+    border: 1.5px solid var(--brutal-dark);
+    font-weight: 700;
+  }
+  .brutal-badge-dark {
+    background-color: var(--brutal-dark) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+
+  /* Modal Struktur */
+  .custom-modal-content {
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 14px !important;
+    box-shadow: 6px 6px 0px var(--brutal-dark) !important;
+    background-color: #ffffff;
+  }
+  .custom-modal-header {
+    background-color: var(--brutal-blue) !important;
+    border-bottom: 3px solid var(--brutal-dark) !important;
+    color: var(--brutal-dark) !important;
+  }
+  .custom-modal-header.danger-header {
+    background-color: var(--brutal-pink) !important;
+  }
+  .custom-modal-footer {
+    border-top: 3px solid var(--brutal-dark) !important;
+    background-color: #f8f9fa;
+  }
+
+  /* Indikator Grid Hasil Dinamis */
+  .result-indicator {
+    background: #ffffff;
+    border: 2px solid var(--brutal-dark);
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+    box-shadow: 3px 3px 0px var(--brutal-dark);
+    height: 100%;
+  }
+  .ind-title {
+    font-weight: 700;
+    color: var(--brutal-dark);
+    line-height: 1.2;
+  }
+  .ind-value {
+    font-weight: 800;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    border: 1.5px solid var(--brutal-dark);
+    border-radius: 6px;
+    padding: 4px 2px;
+    background-color: #f8f9fa;
+  }
+</style>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card form-input-card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-person-plus text-dark fw-bold"></i>
+        <span class="fw-bold text-dark">Data Balita & Antropometri</span>
+      </div>
+      <div class="card-body p-4">
+
+        <div class="mb-3">
+          <label class="form-label fw-bold text-dark">Pilih Balita <span class="text-danger">*</span></label>
+          <div class="d-flex gap-2">
+            <select id="balitaSelect" class="form-select flex-fill" required>
+              <option value="">-- Pilih Balita --</option>
+              {% for b in list_balita %}
+              <option value="{{ b.id }}" data-gender="{{ b.jenis_kelamin }}" data-tgl-lahir="{{ b.tanggal_lahir }}">
+                {{ b.nama }} ({{ 'L' if b.jenis_kelamin=='L' else 'P' }})
+              </option>
+              {% endfor %}
+            </select>
+            <button class="btn btn-brutal-add btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#modalTambahBalita" title="Tambah balita baru">
+              <i class="bi bi-person-plus-fill"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label fw-bold text-dark">Umur (Bulan) <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" id="umurBulan" class="form-control bg-light" readonly
+                     placeholder="0–60" min="0" max="60" required
+                     style="border-style: dashed !important; border-color: #6c757d !important;"/>
+              <span class="input-group-text">bln</span>
+            </div>
+            <div class="form-text fw-medium text-muted">Rentang: 0 – 60 bulan</div>
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-bold text-dark">Jenis Kelamin</label>
+            <input type="text" id="jkDisplay" class="form-control bg-light" readonly
+                   placeholder="Dari data balita" style="border-style: dashed !important; border-color: #6c757d !important;"/>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label fw-bold text-dark">Berat Badan <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" id="beratBadan" class="form-control"
+                     placeholder="2.0" step="0.1" min="2" max="30" required/>
+              <span class="input-group-text">kg</span>
+            </div>
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-bold text-dark">Tinggi Badan <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="number" id="tinggiBadan" class="form-control"
+                     placeholder="35.0" step="0.1" min="35" max="130" required/>
+              <span class="input-group-text">cm</span>
+            </div>
+          </div>
+        </div>
+
+
+
+        <button type="button" class="btn btn-brutal-primary w-100 py-2.5" onclick="submitPrediksi()">
+          <i class="bi bi-cpu me-2"></i>PREDIKSI SEKARANG
+        </button>
+
+        <div class="mt-3 p-2 rounded text-center border border-2 border-dark fw-bold style-indicator" style="background:var(--brutal-yellow); font-size:.78rem; color:var(--brutal-dark)">
+          <i class="bi bi-cpu-fill me-1 text-dark"></i>
+          Model Mesin: <strong>TabNet Architecture</strong> — Multi-Output Classification
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card h-100 result-card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-activity text-dark fw-bold"></i>
+        <span class="fw-bold text-dark">Hasil Prediksi Real-Time</span>
+        <span class="badge brutal-badge-model ms-auto" id="modelBadge" style="display:none">TabNet Active</span>
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-center p-4" id="resultArea" style="background-color: #fafafa;">
+        <div class="text-center text-muted py-5">
+          <div class="d-inline-flex p-4 rounded-circle border border-3 border-dark bg-white mb-3" style="box-shadow: 3px 3px 0 px var(--brutal-dark)">
+            <i class="bi bi-graph-up text-dark" style="font-size:3.5rem;"></i>
+          </div>
+          <p class="mt-2 mb-0 text-dark fw-bold fs-6">Formulir Belum Diproses</p>
+          <p class="text-muted small">Isi parameter antropometri balita di sebelah kiri dan tekan tombol eksekusi sistem.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-2">
+  <div class="col-12">
+    <div class="card table-card">
+      <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-list-columns text-dark fw-bold"></i>
+          <span class="fw-bold text-dark">Database Manajemen Balita Terdaftar</span>
+        </div>
+        <div>
+          <input id="balitaSearch" class="form-control form-control-sm" placeholder="Cari nama balita..." style="width:240px; border-width: 2px !important;" />
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table custom-table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Nama Lengkap</th>
+                <th>Jenis Kelamin</th>
+                <th>Tanggal Lahir</th>
+                <th>NIK</th>
+                <th>Nama Ibu Kandung</th>
+                <th>Alamat Domisili</th>
+                <th style="width: 80px; text-align: center;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="balitaTableBody">
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalTambahBalita" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal-content">
+      <div class="modal-header custom-modal-header">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-person-plus-fill me-2"></i>Registrasi Balita Baru
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: contrast(2);"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-bold text-dark">Nama Lengkap <span class="text-danger">*</span></label>
+            <input type="text" id="namaBalita" class="form-control" placeholder="Nama balita lengkap" oninput="toTitleCase(this)"/>
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-bold text-dark">Jenis Kelamin <span class="text-danger">*</span></label>
+            <select id="jkBalita" class="form-select">
+              <option value="L">Laki-laki</option>
+              <option value="P">Perempuan</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-bold text-dark">Tanggal Lahir <span class="text-danger">*</span></label>
+            <input type="date" id="tglLahir" class="form-control" />
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-bold text-dark">Nomor Induk Kependudukan (NIK) <span class="text-danger">*</span></label>
+            <input type="text" id="nikBalita" class="form-control" placeholder="Masukkan 16 digit NIK" inputmode="numeric" maxlength="16" oninput="filterNumericOnly(this)"/>
+            <div class="form-text text-muted" style="font-size:.8rem">Pastikan nomor sesuai dengan berkas kartu keluarga terbaru</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-bold text-dark">Nama Ibu Kandung <span class="text-danger">*</span></label>
+            <input type="text" id="namaIbu" class="form-control" placeholder="Nama ibu kandung" oninput="toTitleCase(this)"/>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-bold text-dark">Alamat Lengkap <span class="text-danger">*</span></label>
+            <textarea id="alamat" class="form-control" rows="2" placeholder="Nama jalan, RT/RW, Dusun" oninput="toTitleCase(this)"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer custom-modal-footer">
+        <button class="btn btn-outline-dark fw-bold border-2" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-brutal-primary" onclick="tambahBalita()">
+          <i class="bi bi-check2 me-1"></i>Simpan Registrasi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalHapusBalita" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal-content">
+      <div class="modal-header custom-modal-header danger-header">
+        <h5 class="modal-title fw-bold text-dark">
+          <i class="bi bi-trash-fill me-2"></i>Destruksi Data Balita
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: contrast(2);"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="mb-0 text-dark fw-bold fs-6">
+          Apakah Anda Terkonfirmasi Ingin Menghapus Entitas <span id="deleteBalitaName" class="badge brutal-badge-dark px-2 py-1">-</span>?
+        </p>
+        <p class="text-danger small mt-2 mb-0 fw-semibold">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i> Peringatan: Seluruh riwayat rekam medis dan pemeriksaan antropometri anak ini juga akan dihapus permanen dari server.
+        </p>
+        <input type="hidden" id="deleteBalitaId" value="">
+      </div>
+      <div class="modal-footer custom-modal-footer">
+        <button class="btn btn-outline-dark fw-bold border-2" data-bs-dismiss="modal">Batalkan</button>
+        <button class="btn btn-danger fw-bold border-2 border-dark text-white shadow-sm" onclick="confirmHapusBalita()">
+          <i class="bi bi-trash-fill me-1"></i>Ya, Hapus Total
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script>
+function formatTanggal(tstr) {
+  try {
+    if (!tstr) return '-';
+    const s = String(tstr).trim();
+    if (!s || s === '0000-00-00') return '-';
+    if (s.includes('%')) return '-';
+    const datePart = s.split(' ')[0];
+    const isoMatch = datePart.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+    if (isoMatch) {
+      const year = Number(isoMatch[1]), month = Number(isoMatch[2]), day = Number(isoMatch[3]);
+      const d = new Date(year, month - 1, day);
+      if (isNaN(d)) return s;
+      return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+    const indoMatch = datePart.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (indoMatch) {
+      const day = Number(indoMatch[1]), month = Number(indoMatch[2]), year = Number(indoMatch[3]);
+      const d = new Date(year, month - 1, day);
+      if (isNaN(d)) return s;
+      return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+    const d2 = new Date(s);
+    if (!isNaN(d2)) return d2.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+    return s;
+  } catch (e) { return String(tstr); }
+}
+
+const balitaSelect = document.getElementById('balitaSelect');
+const jkDisplay = document.getElementById('jkDisplay');
+
+function syncJenisKelaminDisplay() {
+  const opt = balitaSelect.selectedOptions[0];
+  const jk = opt ? opt.dataset.gender : '';
+  jkDisplay.value = jk === 'L' ? 'Laki-laki' : (jk === 'P' ? 'Perempuan' : '');
+  
+  const tglLahir = opt ? opt.dataset.tglLahir : '';
+  if (tglLahir) {
+    const s = String(tglLahir).trim();
+    let d;
+    const isoMatch = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+    const indoMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (isoMatch) {
+      d = new Date(Number(isoMatch[1]), Number(isoMatch[2]) - 1, Number(isoMatch[3]));
+    } else if (indoMatch) {
+      d = new Date(Number(indoMatch[3]), Number(indoMatch[2]) - 1, Number(indoMatch[1]));
+    } else {
+      d = new Date(s);
+    }
+    
+    if (!isNaN(d.getTime())) {
+      const today = new Date();
+      let months = (today.getFullYear() - d.getFullYear()) * 12;
+      months -= d.getMonth();
+      months += today.getMonth();
+      if (today.getDate() < d.getDate()) {
+        months--;
+      }
+      document.getElementById('umurBulan').value = months >= 0 ? months : 0;
+    } else {
+      document.getElementById('umurBulan').value = '';
+    }
+  } else {
+    // Hanya kosongkan jika user memilih "-- Pilih Balita --"
+    if (!opt || !opt.value) {
+      document.getElementById('umurBulan').value = '';
+    }
+  }
+}
+
+balitaSelect.addEventListener('change', function() {
+  syncJenisKelaminDisplay();
+});
+
+async function refreshBalitaDropdown(selectedId = '') {
+  try {
+    const res = await fetch('/api/balita/list');
+    const data = await res.json();
+    if (!data.success) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Gagal Memuat Data',
+        text: 'Gagal memuat daftar balita: ' + data.message,
+        confirmButtonColor: '#CA6180',
+        customClass: { popup: 'border border-3 border-dark' }
+      });
+      return;
+    }
+
+    balitaSelect.innerHTML = '<option value="">-- Pilih Balita --</option>';
+    data.balita.forEach((b) => {
+      const opt = new Option(`${b.nama} (${b.jenis_kelamin})`, b.id);
+      opt.dataset.gender = b.jenis_kelamin;
+      opt.dataset.tglLahir = b.tanggal_lahir;
+      balitaSelect.add(opt);
+    });
+
+    if (selectedId) balitaSelect.value = String(selectedId);
+    syncJenisKelaminDisplay();
+
+    const tbody = document.getElementById('balitaTableBody');
+    if (tbody) {
+      tbody.innerHTML = '';
+      data.balita.forEach((b) => {
+        const tr = document.createElement('tr');
+        
+        const tdName = document.createElement('td'); tdName.className = "text-dark fw-bold"; tdName.textContent = b.nama || '-';
+        const tdJK = document.createElement('td'); tdJK.textContent = (b.jenis_kelamin === 'L') ? 'Laki-laki' : (b.jenis_kelamin === 'P' ? 'Perempuan' : '-');
+        
+        const tdTgl = document.createElement('td');
+        tdTgl.textContent = formatTanggal(b.tanggal_lahir);
+        
+        const tdNik = document.createElement('td'); tdNik.className="font-monospace fw-bold"; tdNik.textContent = (b.nik && String(b.nik).trim()) ? String(b.nik) : '-';
+        const tdIbu = document.createElement('td'); tdIbu.textContent = b.nama_ibu || '-';
+        const tdAlamat = document.createElement('td'); tdAlamat.textContent = b.alamat || '-';
+        
+        const tdAct = document.createElement('td');
+        tdAct.className = "text-center";
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn btn-sm btn-outline-danger border-2 fw-bold';
+        delBtn.type = 'button';
+        delBtn.title = 'Hapus balita';
+        delBtn.innerHTML = '<i class="bi bi-trash-fill"></i>';
+        delBtn.addEventListener('click', () => openDeleteBalitaModal(b.id, b.nama));
+        tdAct.appendChild(delBtn);
+        
+        tr.appendChild(tdName);
+        tr.appendChild(tdJK);
+        tr.appendChild(tdTgl);
+        tr.appendChild(tdNik);
+        tr.appendChild(tdIbu);
+        tr.appendChild(tdAlamat);
+        tr.appendChild(tdAct);
+        tbody.appendChild(tr);
+      });
+    }
+    
+    const search = document.getElementById('balitaSearch');
+    if (search) {
+      search.addEventListener('input', () => {
+        const q = search.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('#balitaTableBody tr');
+        rows.forEach(r => {
+          const name = r.children[0]?.textContent?.toLowerCase() || '';
+          r.style.display = name.includes(q) ? '' : 'none';
+        });
+      });
+    }
+  } catch (e) {
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Gagal memuat daftar balita: ' + e.message,
+      confirmButtonColor: '#CA6180'
+    });
+  }
+}
+
+function openDeleteBalitaModal(balitaId = null, namaBalita = null) {
+  let id = balitaId || (balitaSelect ? balitaSelect.value : null);
+  if (!id) return;
+  let nama = namaBalita;
+  if (!nama && balitaSelect && balitaSelect.selectedOptions[0]) {
+    nama = balitaSelect.selectedOptions[0].text.split(' (')[0];
+  }
+  document.getElementById('deleteBalitaId').value = id;
+  document.getElementById('deleteBalitaName').textContent = nama || 'Balita';
+  const modalEl = document.getElementById('modalHapusBalita');
+  bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+async function confirmHapusBalita() {
+  const balitaId = document.getElementById('deleteBalitaId').value;
+  const balitaNama = document.getElementById('deleteBalitaName').textContent;
+  if (!balitaId) return;
+
+  try {
+    const res = await fetch(`/api/balita/hapus/${balitaId}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) {
+      await Swal.fire({ icon: 'error', title: 'Gagal', text: 'Error: ' + data.message, confirmButtonColor: '#CA6180' });
+      return;
+    }
+
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHapusBalita')).hide();
+    resetForm();
+    await refreshBalitaDropdown();
+    
+    await Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: `Data ${data.nama} berhasil dihapus.`,
+      confirmButtonColor: '#9ED3DC',
+      timer: 1500,
+      showConfirmButton: false
+    });
+  } catch (e) {
+    await Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menghapus data balita: ' + e.message, confirmButtonColor: '#CA6180' });
+  }
+}
+
+async function submitPrediksi() {
+  const balitaId   = document.getElementById('balitaSelect').value;
+  const umurBulan  = document.getElementById('umurBulan').value;
+  const beratBadan = document.getElementById('beratBadan').value;
+  const tinggiBadan= document.getElementById('tinggiBadan').value;
+
+  const errors = [];
+  if (!balitaId) errors.push('Pilih Balita (wajib diisi)');
+  if (!umurBulan) errors.push('Umur (wajib diisi)');
+  if (!beratBadan) errors.push('Berat Badan (wajib diisi)');
+  if (!tinggiBadan) errors.push('Tinggi Badan (wajib diisi)');
+
+  const beratNum = parseFloat(beratBadan);
+  const tinggiNum = parseFloat(tinggiBadan);
+  const umurNum = parseInt(umurBulan);
+
+  if (beratBadan && Number.isNaN(beratNum)) errors.push('Berat Badan harus berupa angka (contoh: 7.5)');
+  if (tinggiBadan && Number.isNaN(tinggiNum)) errors.push('Tinggi Badan harus berupa angka (contoh: 67.2)');
+  if (umurBulan && Number.isNaN(umurNum)) errors.push('Umur harus berupa angka bulat');
+
+  if (!Number.isNaN(beratNum) && (beratNum < 2 || beratNum > 30)) errors.push('Berat Badan di luar rentang wajar (2–30 kg)');
+  if (!Number.isNaN(tinggiNum) && (tinggiNum < 35 || tinggiNum > 130)) errors.push('Tinggi Badan di luar rentang wajar (35–130 cm)');
+  if (!Number.isNaN(umurNum) && (umurNum < 0 || umurNum > 60)) errors.push('Umur di luar rentang wajar (0–60 bulan)');
+
+  if (errors.length) {
+    const html = `<ul style="text-align:left;margin:0;padding-left:18px fw-bold">${errors.map(e=>`<li>${e}</li>`).join('')}</ul>`;
+    Swal.fire({
+      title: 'Perbaiki parameter input',
+      html,
+      icon: 'warning',
+      confirmButtonText: 'Perbaiki',
+      confirmButtonColor: '#CA6180',
+      customClass: { popup: 'border border-3 border-dark' }
+    });
+    return;
+  }
+
+  // Tampilkan loading kustom dengan border tegas
+  Swal.fire({
+    title: 'Memproses prediksi TabNet...',
+    text: 'Menghitung status gizi multi-output realtime',
+    allowOutsideClick: false,
+    didOpen: () => { Swal.showLoading(); },
+    customClass: { popup: 'border border-3 border-dark' }
+  });
+
+  try {
+    const res  = await fetch('/api/prediksi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        balita_id: parseInt(balitaId),
+        umur_bulan: parseInt(umurNum),
+        berat_badan: parseFloat(beratNum),
+        tinggi_badan: parseFloat(tinggiNum)
+      })
+    });
+    const data = await res.json();
+    Swal.close();
+
+    if (data.success) {
+      renderHasil(data);
+      document.getElementById('modelBadge').style.display = 'inline';
+    } else {
+      Swal.fire({ title: 'Error', text: data.message || 'Terjadi kesalahan', icon: 'error', confirmButtonColor: '#CA6180' });
+    }
+  } catch(e) {
+    Swal.close();
+    Swal.fire({ title: 'Gagal', text: 'Gagal menghubungi server: ' + e.message, icon: 'error', confirmButtonColor: '#CA6180' });
+  }
+}
+
+function renderHasil(data) {
+  const { balita, hasil, pemeriksaan_id } = data;
+  
+  // Set representasi warna dinamis brutalism terarah
+  const colorMap = {
+    success: '#9ED3DC',    // Normal / Sehat
+    danger: '#CA6180',     // Kurang / Stunting / Gizi Buruk
+    warning: '#FEFD99',    // Indikasi Waspada
+    info: '#FCB7C7',       
+    secondary: '#e0e0e0'
+  };
+
+  const getColor = (c) => colorMap[c] || '#e0e0e0';
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="w-100 animate__animated animate__fadeIn">
+      <div class="d-flex align-items-center gap-3 mb-4 p-3"
+           style="background:var(--brutal-blue); border:2px solid var(--brutal-dark); border-radius:10px; box-shadow: 3px 3px 0px var(--brutal-dark);">
+        <div style="width:46px; height:46px; background:var(--brutal-pink); border:2px solid var(--brutal-dark); border-radius:10px;
+                   display:flex; align-items:center; justify-content:center; font-size:1.5rem">👶</div>
+        <div>
+          <div class="fw-bold text-dark fs-5">${balita.nama}</div>
+          <div class="text-dark fw-semibold small">
+            ${balita.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'} &bull;
+            ${balita.umur_bulan} bln &bull;
+            ${balita.berat_badan} kg &bull; ${balita.tinggi_badan} cm
+          </div>
+        </div>
+        <span class="badge text-dark border border-dark border-1 ms-auto" style="background-color: var(--brutal-yellow); font-weight:700;">✅ TERSEDIA</span>
+      </div>
+
+      <div class="row g-3 mb-4">
+        ${renderIndicator('BB/U', 'Berat / Umur', hasil.bbu.label, getColor(hasil.bbu.color), '⚖️')}
+        ${renderIndicator('TB/U', 'Tinggi / Umur', hasil.tbu.label, getColor(hasil.tbu.color), '📏')}
+        ${renderIndicator('BB/TB', 'Berat / Tinggi', hasil.bbtb.label, getColor(hasil.bbtb.color), '📊')}
+      </div>
+
+      <div class="p-3 mb-4" style="background:var(--brutal-pink); border:2px solid var(--brutal-dark); border-radius:8px; box-shadow:2px 2px 0px var(--brutal-dark);">
+        <strong class="text-dark"><i class="bi bi-info-square-fill me-1"></i> Interpretasi Klinis:</strong>
+        <div class="mt-1 text-dark fw-semibold small" style="line-height:1.4;">
+          <strong>BB/U:</strong> ${getLabelDesc('bbu', hasil.bbu.label)} <br>
+          <strong>TB/U:</strong> ${getLabelDesc('tbu', hasil.tbu.label)} <br>
+          <strong>BB/TB:</strong> ${getLabelDesc('bbtb', hasil.bbtb.label)}
+        </div>
+      </div>
+
+      <div class="d-flex gap-3">
+        <a href="/hasil/${pemeriksaan_id}" class="btn btn-brutal-primary btn-sm flex-fill py-2 text-center text-white" style="text-decoration:none;">
+          <i class="bi bi-eye me-1"></i>Buka Lembar Detail
+        </a>
+        <button onclick="resetForm()" class="btn btn-sm flex-fill py-2 fw-bold text-dark border-2 border-dark" style="background-color: var(--brutal-yellow); box-shadow: 2px 2px 0px var(--brutal-dark);">
+          <i class="bi bi-plus-circle me-1"></i>Periksa Balita Lain
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderIndicator(kode, judul, label, colorHex, icon) {
+  return `
+    <div class="col-4">
+      <div class="result-indicator">
+        <div style="font-size:1.6rem">${icon}</div>
+        <div class="ind-title mt-1">${kode}</div>
+        <div class="ind-title text-muted" style="font-size:.65rem; margin-bottom:6px;">${judul}</div>
+        <div class="ind-value text-dark" style="background-color:${colorHex};">${label}</div>
+      </div>
+    </div>
+  `;
+}
+
+function getLabelDesc(type, label) {
+  const desc = {
+    bbu: { Underfed:'Kurang gizi ringan', Normal:'Gizi baik', Malnutrition:'Gizi buruk', Overnutrition:'Lebih gizi' },
+    tbu: { 'Not Stunted':'Tidak stunting', Stunted:'Stunting (pendek)' },
+    bbtb: { 'Very Thin':'Sangat kurus', Thin:'Kurus', Normal:'Normal', Obese:'Gemuk/Obesitas' }
+  };
+  return desc[type]?.[label] || label;
+}
+
+function resetForm() {
+  document.getElementById('balitaSelect').value = '';
+  document.getElementById('umurBulan').value = '';
+  document.getElementById('beratBadan').value = '';
+  document.getElementById('tinggiBadan').value = '';
+  document.getElementById('jkDisplay').value = '';
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="text-center text-muted py-5">
+      <div class="d-inline-flex p-4 rounded-circle border border-3 border-dark bg-white mb-3" style="box-shadow: 3px 3px 0px var(--brutal-dark)">
+        <i class="bi bi-graph-up text-dark" style="font-size:3.5rem;"></i>
+      </div>
+      <p class="mt-2 mb-0 text-dark fw-bold fs-6">Formulir Belum Diproses</p>
+      <p class="text-muted small">Isi parameter antropometri balita di sebelah kiri dan tekan tombol eksekusi sistem.</p>
+    </div>`;
+  document.getElementById('modelBadge').style.display = 'none';
+}
+
+function toTitleCase(element) {
+  element.value = element.value.toLowerCase().replace(/\b\w/g, function(char) {
+    return char.toUpperCase();
+  });
+}
+
+function filterNumericOnly(element) {
+  element.value = element.value.replace(/[^0-9]/g, '');
+  if (element.value.length > 16) {
+    element.value = element.value.substring(0, 16);
+  }
+}
+
+async function tambahBalita() {
+  const nama = document.getElementById('namaBalita').value.trim();
+  const jk   = document.getElementById('jkBalita').value;
+  const tgl  = document.getElementById('tglLahir').value;
+  const nik  = document.getElementById('nikBalita').value.trim();
+  const namaIbu = document.getElementById('namaIbu').value.trim();
+  const alamat = document.getElementById('alamat').value.trim();
+  
+  let validationErrors = [];
+  if (!nama) validationErrors.push('Nama Lengkap');
+  if (!tgl) {
+    validationErrors.push('Tanggal Lahir');
+  } else {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Allow any time today
+    const minDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
+    minDate.setHours(0, 0, 0, 0);
+    const inputDate = new Date(tgl);
+    if (inputDate > today || inputDate < minDate) {
+      validationErrors.push('Tanggal Lahir harus maksimal 5 tahun ke belakang hingga hari ini');
+    }
+  }
+  if (!nik) validationErrors.push('NIK');
+  if (!namaIbu) validationErrors.push('Nama Ibu');
+  if (!alamat) validationErrors.push('Alamat');
+  
+  if (nik && nik.length !== 16) {
+    validationErrors.push('NIK harus tepat 16 digit angka');
+  }
+  
+  if (validationErrors.length) {
+    let html = '<p class="fw-bold">Gagal memproses, periksa field:</p><ul style="text-align:left;display:inline-block"><li>' + validationErrors.join('</li><li>') + '</li></ul>';
+    await Swal.fire({
+      icon: 'warning',
+      title: 'Validasi Gagal',
+      html: html,
+      confirmButtonText: 'Evaluasi Kembali',
+      confirmButtonColor: '#CA6180',
+      customClass: { popup: 'border border-3 border-dark' }
+    });
+    return;
+  }
+  
+  try {
+    const res  = await fetch('/api/balita/tambah', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ nama, jenis_kelamin: jk, tanggal_lahir: tgl, nik, nama_ibu: namaIbu, alamat })
+    });
+    const data = await res.json();
+    if (data.success) {
+      await refreshBalitaDropdown(data.balita_id);
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('modalTambahBalita')).hide();
+      document.getElementById('namaBalita').value = '';
+      document.getElementById('tglLahir').value = '';
+      document.getElementById('nikBalita').value = '';
+      document.getElementById('namaIbu').value = '';
+      document.getElementById('alamat').value = '';
+      await Swal.fire({
+        icon: 'success',
+        title: 'Sukses Registrasi',
+        text: 'Balita berhasil disimpan ke dalam cluster.',
+        confirmButtonText: 'Selesai',
+        confirmButtonColor: '#9ED3DC',
+        customClass: { popup: 'border border-3 border-dark' }
+      });
+    } else {
+      await Swal.fire({ icon: 'error', title: 'Gagal', text: 'Error: ' + data.message, confirmButtonText: 'OK' });
+    }
+  } catch(e) {
+    await Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal: ' + e.message, confirmButtonText: 'OK' });
+  }
+}
+
+refreshBalitaDropdown();
+
+document.addEventListener('DOMContentLoaded', function() {
+  const tglInput = document.getElementById('tglLahir');
+  if (tglInput) {
+    const today = new Date();
+    const minDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
+    
+    const formatDate = (dateObj) => {
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
+    tglInput.max = formatDate(today);
+    tglInput.min = formatDate(minDate);
+  }
+});
+</script>
+{% endblock %}

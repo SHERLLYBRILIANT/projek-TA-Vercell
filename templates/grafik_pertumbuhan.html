@@ -1,0 +1,465 @@
+{% extends "base.html" %}
+
+{% block title %}Grafik Pertumbuhan Anak — GiziLens{% endblock %}
+{% block page_title %}
+<style>
+  .page-title-icon {
+    -webkit-text-stroke: 1px var(--brutal-dark);
+    color: var(--brutal-gold);
+  }
+</style>
+<i class="bi bi-graph-up-arrow me-2 page-title-icon"></i>Grafik Pertumbuhan Anak
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Variabel Desain Utama (Neo-Brutalism) */
+  :root {
+    --brutal-blue: #9ED3DC;
+    --brutal-gold: #D4AF37;
+    --brutal-pink: #FCB7C7;
+    --brutal-crimson: #CA6180;
+    --brutal-dark: #2A2D34;
+    --brutal-grey: #64748B;
+  }
+
+  /* Konstruksi Card Utama Bergaya Neo-Brutalism */
+  .card {
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 14px !important;
+    box-shadow: 5px 5px 0px var(--brutal-dark) !important;
+    background-color: #ffffff !important;
+    margin-bottom: 1.75rem;
+    transition: none !important;
+    position: relative; /* Menjaga konteks tumpukan (stacking context) */
+  }
+  .card:hover {
+    transform: none !important;
+    box-shadow: 5px 5px 0px var(--brutal-dark) !important;
+  }
+
+  /* KUNCI UTAMA: Menaikkan level tumpukan panel kontrol agar dropdown melayang di atas grafik */
+  .card-control { 
+    border-top: 1px solid var(--brutal-dark);
+    z-index: 100; 
+  }
+  .card-control .card-body { background-color: #ffffff; }
+  
+  .card-bb .card-header { background-color: var(--brutal-blue) !important; }
+  .card-tb .card-header { background-color: var(--brutal-pink) !important; }
+  .card-bbtb .card-header { background-color: var(--brutal-gold) !important; }
+  .card-history .card-header { background-color: #f8f9fa !important; }
+
+  /* Struktur Header Card Tebal */
+  .card-header {
+    border-bottom: 3px solid var(--brutal-dark) !important;
+    font-weight: 800 !important;
+    color: var(--brutal-dark) !important;
+    padding: 1rem 1.25rem !important;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* --- MODERNISED SEARCHABLE DROPDOWN (1 KOLOM) --- */
+  .brutal-dropdown-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .brutal-combo-input {
+    width: 100%;
+    padding: 0.65rem 2.5rem 0.65rem 1rem;
+    font-weight: 700;
+    color: var(--brutal-dark);
+    background-color: #ffffff;
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 8px !important;
+    outline: none;
+  }
+  .brutal-combo-input:focus {
+    background-color: rgba(212, 175, 55, 0.08) !important;
+  }
+
+  .brutal-dropdown-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 1.1rem;
+    color: var(--brutal-dark);
+    transition: transform 0.2s ease;
+  }
+
+  /* KUNCI UTAMA: z-index dimutlakkan ke lapisan paling atas */
+  .brutal-dropdown-menu {
+    position: absolute;
+    top: 105%;
+    left: 0;
+    width: 100%;
+    z-index: 99999 !important; 
+    background: #ffffff;
+    border: 3px solid var(--brutal-dark);
+    border-radius: 8px;
+    box-shadow: 4px 4px 0px var(--brutal-dark);
+    max-height: 240px;
+    overflow-y: auto;
+    display: none;
+    padding: 5px 0;
+  }
+
+  .brutal-dropdown-item {
+    padding: 10px 15px;
+    font-weight: 700;
+    color: var(--brutal-dark);
+    cursor: pointer;
+    border-bottom: 1px dashed #e2e8f0;
+  }
+  .brutal-dropdown-item:last-child {
+    border-bottom: none;
+  }
+  .brutal-dropdown-item:hover {
+    background-color: var(--brutal-blue);
+  }
+  .brutal-dropdown-item.no-result {
+    color: var(--brutal-grey);
+    font-style: italic;
+    cursor: default;
+    background: none !important;
+  }
+
+  /* Tombol Cetak PDF */
+  .btn-brutal-pdf {
+    background-color: var(--brutal-gold) !important;
+    color: var(--brutal-dark) !important;
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 8px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 0.65rem 1.25rem;
+    box-shadow: 3px 3px 0px var(--brutal-dark);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .btn-brutal-pdf:hover, .btn-brutal-pdf:focus {
+    background-color: #bfa030 !important;
+    color: var(--brutal-dark) !important;
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0px var(--brutal-dark);
+  }
+
+  /* Container Canvas Grafik */
+  .chart-container {
+    position: relative;
+    height: 400px;
+    margin-bottom: 10px;
+    border: 2px solid var(--brutal-dark);
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #ffffff;
+  }
+
+  /* Tampilan Kosong (Empty State) */
+  .info-empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--brutal-dark);
+    background-color: #fafafa;
+    border: 2px dashed var(--brutal-dark);
+    border-radius: 10px;
+  }
+  .info-empty i {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 12px;
+    color: var(--brutal-crimson);
+    -webkit-text-stroke: 1px var(--brutal-dark);
+  }
+  .info-empty p {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0;
+  }
+
+  /* Desain Struktur Tabel Riwayat */
+  .custom-table thead {
+    border-bottom: 3px solid var(--brutal-dark) !important;
+  }
+  .custom-table th {
+    color: var(--brutal-dark) !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    padding: 12px 16px !important;
+    border-bottom: 3px solid var(--brutal-dark) !important;
+    border-right: 1px solid #dee2e6;
+  }
+  .custom-table td {
+    padding: 12px 16px !important;
+    vertical-align: middle;
+    font-weight: 600;
+    color: var(--brutal-dark) !important;
+    border-bottom: 2px solid var(--brutal-dark) !important;
+    border-right: 1px solid #dee2e6;
+  }
+  .custom-table tbody tr:hover {
+    background-color: rgba(158, 211, 220, 0.2) !important;
+  }
+
+  .control-panel {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .control-panel {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .brutal-dropdown-container {
+      max-width: 100%;
+    }
+    .btn-group-custom {
+      width: 100%;
+    }
+    .btn-brutal-pdf {
+      width: 100%;
+      text-align: center;
+    }
+    .chart-container {
+      height: 300px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+  <div class="row">
+    <div class="col-12">
+      
+      <div class="card card-control">
+        <div class="card-body p-4" style="border-top: 6px solid var(--brutal-crimson);">
+          <div class="control-panel">
+            
+            <div class="flex-grow-1">
+              <label class="form-label fw-bold text-dark small text-uppercase mb-2" style="letter-spacing: 0.5px;">
+                <i class="bi bi-search me-1"></i> Pilih / Cari Data Balita
+              </label>
+              
+              <div class="brutal-dropdown-container" id="brutalDropdownWrapper">
+                <input type="text" id="comboSearchInput" class="brutal-combo-input" placeholder="Ketik nama / klik panah untuk daftar..." autocomplete="off">
+                <i class="bi bi-chevron-down brutal-dropdown-icon" id="comboArrowIcon"></i>
+                
+                <div class="brutal-dropdown-menu" id="brutalDropdownMenu">
+                  <div class="brutal-dropdown-item" data-value="">-- Kosongkan Pilihan --</div>
+                  {% for balita in list_balita %}
+                  <div class="brutal-dropdown-item" data-value="{{ balita.id }}">{{ balita.nama }} ({{ balita.jenis_kelamin }})</div>
+                  {% endfor %}
+                  <div class="brutal-dropdown-item no-result" id="noResultItem" style="display: none;">Data anak tidak ditemukan...</div>
+                </div>
+
+                <select id="selectBalita" style="display: none;">
+                  <option value="">-- Pilih Nama Anak --</option>
+                  {% for balita in list_balita %}
+                  <option value="{{ balita.id }}">{{ balita.nama }} ({{ balita.jenis_kelamin }})</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="btn-group-custom">
+              <button id="btnExportPdf" class="btn btn-brutal-pdf" title="Download berkas grafik ke PDF">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i> Cetak Dokumen Grafik (PDF)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-bb">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-graph-up-arrow me-2"></i>Kurva Berat Badan Menurut Umur (BB/U)</span>
+        </div>
+        <div class="card-body p-4">
+          <div id="chartBBContainer" class="chart-container" style="display: none;">
+            <canvas id="chartBB"></canvas>
+          </div>
+          <div id="emptyBB" class="info-empty">
+            <i class="bi bi-person-bounding-box"></i>
+            <p>Sistem Siap: Tentukan target anak untuk merender pemetaan kurva berat badan.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-tb">
+        <div class="card-header">
+          <i class="bi bi-graph-up-arrow me-2"></i>Kurva Tinggi Badan Menurut Umur (TB/U)
+        </div>
+        <div class="card-body p-4">
+          <div id="chartTBContainer" class="chart-container" style="display: none;">
+            <canvas id="chartTB"></canvas>
+          </div>
+          <div id="emptyTB" class="info-empty">
+            <i class="bi bi-rulers"></i>
+            <p>Sistem Siap: Tentukan target anak untuk merender pemetaan kurva tinggi badan.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-bbtb">
+        <div class="card-header">
+          <i class="bi bi-activity me-2"></i>Analisis Proporsi Berat Badan Menurut Tinggi Badan (BB/TB)
+        </div>
+        <div class="card-body p-4">
+          <div id="chartBBTBContainer" class="chart-container" style="display: none;">
+            <canvas id="chartBBTB"></canvas>
+          </div>
+          <div id="emptyBBTB" class="info-empty">
+            <i class="bi bi-intersect"></i>
+            <p>Sistem Siap: Tentukan target anak untuk menganalisis rasio ideal proporsi tubuh.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-history" id="tabelRiwayatContainer" style="display: none;">
+        <div class="card-header">
+          <i class="bi bi-table me-2"></i>Log Kronologis Histori Pemeriksaan Klinis
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table custom-table table-hover mb-0" id="tabelRiwayat">
+              <thead>
+                <tr>
+                  <th class="ps-4" style="width: 80px; text-align: center;">No Index</th>
+                  <th>Tanggal Pelaksanaan Periksa</th>
+                  <th>Umur Matrik (Bulan)</th>
+                  <th>Berat Aktual (kg)</th>
+                  <th>Tinggi Aktual (cm)</th>
+                </tr>
+              </thead>
+              <tbody id="tabelRiwayatBody">
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script src="{{ url_for('static', filename='grafik.js') }}"></script>
+
+<script>
+  // --- CORE ENGINE: SEARCHABLE DROPDOWN 1 KOLOM ---
+  const comboInput = document.getElementById('comboSearchInput');
+  const dropdownMenu = document.getElementById('brutalDropdownMenu');
+  const arrowIcon = document.getElementById('comboArrowIcon');
+  const items = dropdownMenu.getElementsByClassName('brutal-dropdown-item');
+  const noResult = document.getElementById('noResultItem');
+  const hiddenSelect = document.getElementById('selectBalita');
+
+  // Buka menu saat input diklik atau fokus
+  comboInput.addEventListener('click', function(e) {
+    e.stopPropagation();
+    dropdownMenu.style.display = 'block';
+    arrowIcon.style.transform = 'translateY(-50%) rotate(180deg)';
+  });
+
+  // Filter saat mengetik huruf (mencari termirip)
+  comboInput.addEventListener('input', function() {
+    const filter = this.value.toLowerCase().trim();
+    dropdownMenu.style.display = 'block';
+    arrowIcon.style.transform = 'translateY(-50%) rotate(180deg)';
+    
+    let hasMatch = false;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === 'noResultItem') continue;
+      
+      const itemText = items[i].textContent.toLowerCase();
+      if (itemText.includes(filter)) {
+        items[i].style.display = 'block';
+        hasMatch = true;
+      } else {
+        items[i].style.display = 'none';
+      }
+    }
+
+    noResult.style.display = hasMatch ? 'none' : 'block';
+
+    // Jika input dihapus bersih, reset grafik ke kondisi kosong
+    if (filter === "") {
+      hiddenSelect.value = "";
+      hiddenSelect.dispatchEvent(new Event('change'));
+    }
+  });
+
+  // Ketika salah satu item dipilih dari daftar dropdown
+  dropdownMenu.addEventListener('click', function(e) {
+    const targetItem = e.target.closest('.brutal-dropdown-item');
+    if (!targetItem || targetItem.classList.contains('no-result')) return;
+
+    const val = targetItem.getAttribute('data-value');
+    const text = targetItem.textContent;
+
+    // Set nilai visual ke dalam input kolom tunggal
+    if (val === "") {
+      comboInput.value = "";
+    } else {
+      comboInput.value = text;
+    }
+
+    // Teruskan nilai ke hidden select asli agar dideteksi oleh grafik.js Anda
+    hiddenSelect.value = val;
+    hiddenSelect.dispatchEvent(new Event('change'));
+
+    // Tutup menu
+    dropdownMenu.style.display = 'none';
+    arrowIcon.style.transform = 'translateY(-50%) rotate(0deg)';
+  });
+
+  // Tutup dropdown jika klik di luar area input kontainer
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('brutalDropdownWrapper').contains(e.target)) {
+      dropdownMenu.style.display = 'none';
+      arrowIcon.style.transform = 'translateY(-50%) rotate(0deg)';
+      
+      // Sinkronisasi ulang teks jika klik luar tanpa memilih objek valid
+      if (hiddenSelect.value === "") {
+        comboInput.value = "";
+      } else {
+        const activeOption = hiddenSelect.options[hiddenSelect.selectedIndex];
+        comboInput.value = activeOption ? activeOption.text : "";
+      }
+    }
+  });
+
+  // Integrasi custom styling dasar untuk Alert sistem (SweetAlert2) agar senada
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof Swal !== 'undefined') {
+      const originalFire = Swal.fire;
+      Swal.fire = function(options) {
+        if (options && typeof options === 'object') {
+          options.customClass = {
+            popup: 'border border-3 border-dark rounded-3 shadow-sm'
+          };
+          if (!options.confirmButtonColor) options.confirmButtonColor = '#CA6180';
+        }
+        return originalFire.call(this, options);
+      };
+    }
+  });
+</script>
+{% endblock %}

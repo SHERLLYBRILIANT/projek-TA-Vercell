@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+{% block title %}Upload Batch — GiziLens{% endblock %}
+{% block page_title %}<i class="bi bi-upload me-2"></i>Upload Batch Prediksi{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --brutal-blue: #9ED3DC;
+    --brutal-yellow: #FEFD99;
+    --brutal-pink: #FCB7C7;
+    --brutal-crimson: #CA6180;
+    --brutal-dark: #2A2D34;
+    --brutal-blue-darker: #7cb8c2;
+    --brutal-crimson-darker: #ad4b67;
+  }
+
+  /* Konstruksi Utama Struktur Kartu (Neo-Brutalism) */
+  .card {
+    border: 3px solid var(--brutal-dark) !important;
+    border-radius: 12px !important;
+    box-shadow: 4px 4px 0px var(--brutal-dark) !important;
+    overflow: hidden;
+    background-color: #ffffff;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header {
+    border-bottom: 3px solid var(--brutal-dark) !important;
+    padding: 1rem 1.25rem !important;
+    color: var(--brutal-dark) !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* Pembagian Tema Warna Header */
+  .upload-card .card-header { background-color: var(--brutal-pink) !important; }
+  .guide-card .card-header { background-color: var(--brutal-yellow) !important; }
+  .result-card .card-header { background-color: var(--brutal-blue) !important; }
+
+  /* Zona Unggah Berkas Kustom (Drop Zone) */
+  .upload-zone {
+    border: 3px dashed var(--brutal-dark) !important;
+    border-radius: 10px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    background-color: rgba(158, 211, 220, 0.15); /* Soft Blue Tint */
+    transition: background-color 0.15s ease;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    background-color: rgba(158, 211, 220, 0.4);
+  }
+  .upload-zone i {
+    font-size: 3rem;
+    color: var(--brutal-dark);
+    -webkit-text-stroke: 1px #ffffff;
+  }
+
+  /* Penampung Informasi Berkas (File Info Box) */
+  .custom-file-info {
+    background-color: var(--brutal-yellow) !important;
+    border: 2px solid var(--brutal-dark) !important;
+    border-radius: 8px;
+    box-shadow: 2px 2px 0px var(--brutal-dark);
+  }
+
+  /* Tombol Utama Bertema Garis Tebal */
+  .btn-brutal-primary {
+    background-color: var(--brutal-crimson) !important;
+    color: #ffffff !important;
+    border: 2px solid var(--brutal-dark) !important;
+    border-radius: 8px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.65rem 1rem;
+    box-shadow: 3px 3px 0px var(--brutal-dark);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .btn-brutal-primary:hover:not([disabled]) {
+    background-color: var(--brutal-crimson-darker) !important;
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0px var(--brutal-dark);
+  }
+  .btn-brutal-primary:disabled {
+    background-color: #e0e0e0 !important;
+    border-color: #a0a0a0 !important;
+    color: #757575 !important;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .btn-brutal-secondary {
+    background-color: var(--brutal-pink) !important;
+    color: var(--brutal-dark) !important;
+    border: 2px solid var(--brutal-dark) !important;
+    border-radius: 8px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0px var(--brutal-dark);
+  }
+  .btn-brutal-secondary:hover {
+    background-color: #e8a2b2 !important;
+  }
+
+  .btn-brutal-success {
+    background-color: var(--brutal-yellow) !important;
+    color: var(--brutal-dark) !important;
+    border: 2px solid var(--brutal-dark) !important;
+    border-radius: 6px !important;
+    font-weight: 700;
+    font-size: 0.8rem;
+    box-shadow: 2px 2px 0px var(--brutal-dark);
+  }
+
+  /* Desain Struktur Komponen Tabel */
+  .custom-table {
+    border-collapse: collapse;
+  }
+  .custom-table thead, .sticky-thead th {
+    border-bottom: 3px solid var(--brutal-dark) !important;
+    background-color: #f8f9fa !important;
+  }
+  .custom-table th {
+    color: var(--brutal-dark) !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    padding: 10px 12px !important;
+    border-bottom: 3px solid var(--brutal-dark) !important;
+  }
+  .custom-table td {
+    padding: 10px 12px !important;
+    vertical-align: middle;
+    font-weight: 600;
+    color: var(--brutal-dark);
+    border-bottom: 2px solid var(--brutal-dark) !important;
+  }
+  .custom-table tbody tr:hover {
+    background-color: rgba(254, 253, 153, 0.2) !important;
+  }
+
+  /* Badge Khusus Hasil Prediksi Multi-Output */
+  .brutal-badge {
+    border: 1.5px solid var(--brutal-dark) !important;
+    font-weight: 700 !important;
+    color: var(--brutal-dark) !important;
+    text-transform: uppercase;
+    font-size: 0.7rem !important;
+    padding: 4px 6px !important;
+    box-shadow: 1px 1px 0px var(--brutal-dark);
+  }
+  .brutal-badge-status-green { background-color: var(--brutal-blue) !important; }
+  .brutal-badge-status-yellow { background-color: var(--brutal-yellow) !important; }
+  .brutal-badge-status-pink { background-color: var(--brutal-pink) !important; }
+  .brutal-badge-status-crimson { background-color: var(--brutal-crimson) !important; color: #fff !important; }
+</style>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card upload-card">
+      <div class="card-header"><i class="bi bi-file-earmark-arrow-up me-2 text-dark fw-bold"></i>Media Unggah Berkas</div>
+      <div class="card-body p-4">
+        
+        <div class="upload-zone mb-4" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <i class="bi bi-cloud-upload text-dark"></i>
+          <p class="mt-3 mb-1 fw-bold text-dark fs-6">Klik atau Drag & Drop Berkas di Sini</p>
+          <p class="text-muted fw-medium mb-1" style="font-size:.82rem">Ekstensi Diizinkan: CSV atau Excel (.xlsx/.xls)</p>
+          <p class="badge bg-dark fw-bold text-white mb-0" style="font-size:.75rem">Limitasi Alokasi: Maks. 10 MB</p>
+        </div>
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display:none"
+               onchange="handleFileSelect(this.files[0])"/>
+
+        <div id="fileInfo" style="display:none" class="p-3 mb-4 custom-file-info">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-check text-dark fs-4" style="-webkit-text-stroke: 1px #fff;"></i>
+            <div class="overflow-hidden flex-fill me-2">
+              <div id="fileName" class="fw-bold text-dark text-truncate" style="font-size:.875rem"></div>
+              <div id="fileSize" class="text-dark fw-semibold small" style="opacity: 0.8;"></div>
+            </div>
+            <button class="btn btn-sm text-dark p-0 fw-bold fs-5" style="line-height:1;"
+                    onclick="clearFile()" title="Hapus Berkas"><i class="bi bi-x-circle-fill"></i></button>
+          </div>
+        </div>
+
+        <button id="btnUpload" class="btn btn-brutal-primary w-100 py-2.5" onclick="uploadBatch()" disabled>
+          <i class="bi bi-cpu me-2"></i>Eksekusi Prediksi Batch TabNet
+        </button>
+      </div>
+    </div>
+
+    <div class="card guide-card">
+      <div class="card-header"><i class="bi bi-info-circle me-2 text-dark fw-bold"></i>Spesifikasi Validasi Skema Kolom</div>
+      <div class="card-body p-4">
+        <p class="text-dark fw-bold mb-2" style="font-size:.83rem">Atribut kolom yang wajib dideklarasikan dalam file:</p>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered custom-table mb-3" style="font-size:.8rem">
+            <thead>
+              <tr><th>Nama Atribut</th><th>Tipe Data</th><th>Keterangan Validasi</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>nama</code></td><td>Teks</td><td>Nama lengkap anak (opsional)</td></tr>
+              <tr><td><code>jenis_kelamin</code></td><td>L / P</td><td>L = Laki-laki, P = Perempuan</td></tr>
+              <tr><td><code>umur_bulan</code></td><td>Integer</td><td>Rentang batasan umur: 0–60 bulan</td></tr>
+              <tr><td><code>berat_badan</code></td><td>Desimal</td><td>Berat metrik menggunakan satuan kg</td></tr>
+              <tr><td><code>tinggi_badan</code></td><td>Desimal</td><td>Tinggi metrik menggunakan satuan cm</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <a href="/static/contoh_data_batch.csv" download class="btn btn-sm btn-brutal-secondary w-100 py-2">
+          <i class="bi bi-download me-1"></i>Unduh Templat Contoh CSV
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card result-card">
+      <div class="card-header d-flex justify-content-between align-items-center gap-2">
+        <span class="text-dark fw-bold"><i class="bi bi-table me-2 text-dark"></i>Lembar Monitor Hasil Pemrosesan</span>
+        <div id="exportBtns" style="display:none">
+          <button onclick="exportExcel()" class="btn btn-sm btn-brutal-success">
+            <i class="bi bi-file-earmark-excel me-1"></i>Export Dokumen Excel
+          </button>
+        </div>
+      </div>
+      <div class="card-body p-0" id="batchResultArea" style="background-color: #fafafa;">
+        <div class="text-center text-muted py-5">
+          <div class="d-inline-flex p-4 rounded-circle border border-3 border-dark bg-white mb-3" style="box-shadow: 3px 3px 0px var(--brutal-dark)">
+            <i class="bi bi-table text-dark" style="font-size:3rem;"></i>
+          </div>
+          <p class="mt-2 mb-0 text-dark fw-bold fs-6">Klauster Data Kosong</p>
+          <p class="text-muted small px-4">Unggah file CSV/Excel di panel kiri dan jalankan kalkulasi komputasi model.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedFile = null;
+let globalBatchResults = null;
+
+// Konfigurasi Drag & Drop Event
+const dropZone = document.getElementById('dropZone');
+['dragenter','dragover'].forEach(e => dropZone.addEventListener(e, ev => {
+  ev.preventDefault(); dropZone.classList.add('drag-over');
+}));
+['dragleave','drop'].forEach(e => dropZone.addEventListener(e, ev => {
+  ev.preventDefault(); dropZone.classList.remove('drag-over');
+}));
+dropZone.addEventListener('drop', ev => {
+  const file = ev.dataTransfer.files[0];
+  if (file) handleFileSelect(file);
+});
+
+function handleFileSelect(file) {
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['csv','xlsx','xls'].includes(ext)) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Validasi Berkas Gagal',
+      text: 'Format ekstensi tidak diizinkan. Gunakan standar ekstensi file CSV atau Excel (.xlsx, .xls)',
+      confirmButtonColor: '#2A2D34',
+      customClass: { popup: 'border border-3 border-dark' }
+    });
+    return;
+  }
+  selectedFile = file;
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileSize').textContent = (file.size/1024).toFixed(1) + ' KB';
+  document.getElementById('fileInfo').style.display = 'block';
+  document.getElementById('btnUpload').disabled = false;
+}
+
+function clearFile() {
+  selectedFile = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fileInfo').style.display = 'none';
+  document.getElementById('btnUpload').disabled = true;
+}
+
+async function uploadBatch() {
+  if (!selectedFile) return;
+  
+  Swal.fire({
+    title: 'Memproses data cluster...',
+    text: 'Mengonversi matriks dan inferensi model TabNet berjalan',
+    allowOutsideClick: false,
+    didOpen: () => { Swal.showLoading(); },
+    customClass: { popup: 'border border-3 border-dark' }
+  });
+
+  const fd = new FormData();
+  fd.append('file', selectedFile);
+  try {
+    const res  = await fetch('/api/batch/upload', { method:'POST', body:fd });
+    const data = await res.json();
+    Swal.close();
+    if (data.success) {
+      globalBatchResults = data.results;
+      renderBatchResults(data.results, data.total);
+    } else {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Komputasi Gagal',
+        text: 'Error Sistem: ' + data.message,
+        confirmButtonColor: '#CA6180'
+      });
+    }
+  } catch(e) {
+    Swal.close();
+    await Swal.fire({
+      icon: 'error',
+      title: 'Koneksi Terputus',
+      text: 'Gagal melakukan unggah data ke cluster server: ' + e.message,
+      confirmButtonColor: '#CA6180'
+    });
+  }
+}
+
+function renderBatchResults(results, total) {
+  document.getElementById('exportBtns').style.display = 'block';
+  
+  // Map klasifikasi label ke kelas warna representasi neo-brutalism kustom
+  const colorMap = {
+    Normal: 'brutal-badge-status-green', 
+    'Not Stunted': 'brutal-badge-status-green',
+    Malnutrition: 'brutal-badge-status-crimson', 
+    Stunted: 'brutal-badge-status-crimson', 
+    'Very Thin': 'brutal-badge-status-crimson',
+    Underfed: 'brutal-badge-status-yellow', 
+    Thin: 'brutal-badge-status-yellow',
+    Overnutrition: 'brutal-badge-status-pink', 
+    Obese: 'brutal-badge-status-pink'
+  };
+
+  const badge = (label) => label
+    ? `<span class="badge brutal-badge ${colorMap[label] || 'bg-light'}">${label}</span>`
+    : '<span class="text-muted fw-bold">-</span>';
+
+  let rows = results.map(r => r.error
+    ? `<tr class="table-danger" style="border-bottom: 2px solid var(--brutal-dark) !important;">
+        <td class="fw-bold text-center">${r.no}</td>
+        <td class="fw-bold">${r.nama}</td>
+        <td colspan="7" class="p-2"><span class="badge bg-danger border border-dark text-white fw-bold"><i class="bi bi-exclamation-triangle"></i> Gagal baris data: ${r.error}</span></td>
+       </tr>`
+    : `<tr style="border-bottom: 2px solid var(--brutal-dark) !important;">
+        <td class="text-center fw-bold bg-light" style="border-right: 1px solid #dee2e6;">${r.no}</td>
+        <td class="fw-bold text-dark">${r.nama || '-'}</td>
+        <td class="text-center">
+          <span class="badge border border-dark fw-bold text-dark ${r.jenis_kelamin==='L'?'brutal-badge-status-green':'brutal-badge-status-pink'}">
+            ${r.jenis_kelamin==='L'?'L':'P'}
+          </span>
+        </td>
+        <td class="fw-bold text-center">${r.umur_bulan}</td>
+        <td class="fw-bold">${r.berat_badan}</td>
+        <td class="fw-bold">${r.tinggi_badan}</td>
+        <td>${badge(r.bbu)}</td>
+        <td>${badge(r.tbu)}</td>
+        <td>${badge(r.bbtb)}</td>
+      </tr>`
+  ).join('');
+
+  document.getElementById('batchResultArea').innerHTML = `
+    <div class="p-3 d-flex justify-content-between align-items-center" style="background-color: #ffffff; border-bottom: 3px solid var(--brutal-dark);">
+      <span class="badge border border-dark text-dark px-3 py-2 fs-6 fw-bold" style="background-color: var(--brutal-yellow); box-shadow: 2px 2px 0px var(--brutal-dark);"><i class="bi bi-check-circle-fill me-1"></i> Sukses Sinkronisasi: ${total} Baris Entitas</span>
+    </div>
+    <div class="table-responsive" style="max-height:520px; overflow-y:auto">
+      <table class="table custom-table table-hover mb-0">
+        <thead class="sticky-top style-thead" style="z-index:10;">
+          <tr>
+            <th style="width: 60px; text-align: center;">No</th><th>Nama Anak</th><th style="text-align: center; width:60px;">Jenis Kelamin</th>
+            <th style="text-align: center; width:70px;">Umur(Bulan)</th><th>BB(kg)</th><th>TB(cm)</th>
+            <th>Indikator BB/U</th><th>Indikator TB/U</th><th>Indikator BB/TB</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+function exportExcel() {
+  if (!globalBatchResults || globalBatchResults.length === 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validasi Gagal',
+      text: 'Tidak ada data hasil prediksi batch untuk diekspor.',
+      confirmButtonColor: '#CA6180'
+    });
+    return;
+  }
+  
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/export/batch/excel';
+  
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'results';
+  input.value = JSON.stringify(globalBatchResults);
+  
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}
+</script>
+{% endblock %}
