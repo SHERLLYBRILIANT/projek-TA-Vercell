@@ -47,8 +47,12 @@ static/uploads/*
 test_model_info.html
 debug_grafik.py
 
-# Docker
-# .dockerignore should be committed
+# Unnecessary files for Vercel deployment
+[1-5].png
+*.png.bak
+notebooks/
+scratch/
+docs/
 
 # Database backups
 *.sql.bak
@@ -56,7 +60,6 @@ debug_grafik.py
 
 # Jupyter
 .ipynb_checkpoints/
-!notebooks/*.ipynb
 
 # OS specific
 Thumbs.db

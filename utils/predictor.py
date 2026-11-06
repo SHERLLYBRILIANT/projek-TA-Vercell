@@ -196,7 +196,69 @@ class GiziPredictor:
         """
         Prediksi status gizi satu balita.
         Returns dict dengan label dan kode untuk setiap indikator.
+        Prioritas:
+        1. Remote TabNet API (jika PREDICTOR_API_URL diset di environment Vercel)
+        2. Local TabNet Model (jika torch & model file tersedia secara lokal)
+        3. Rule-based fallback (WHO standards)
         """
+        # 1. Coba Remote API (jika dideploy di Vercel dengan TabNet di Hugging Face / Render)
+        api_url = os.environ.get('PREDICTOR_API_URL', '').strip()
+        if api_url:
+            try:
+                import requests
+                endpoint = api_url.rstrip('/')
+                if not endpoint.endswith('/predict'):
+                    endpoint += '/predict'
+
+                payload = {
+                    'gender': int(gender),
+                    'age_months': int(age_months),
+                    'weight': float(weight),
+                    'height': float(height)
+                }
+                resp = requests.post(endpoint, json=payload, timeout=6)
+                if resp.status_code == 200:
+                    api_data = resp.json()
+                    # Mendukung format dict hasil lengkap maupun dict kode sederhana
+                    bbu_val = api_data.get('bbu')
+                    tbu_val = api_data.get('tbu')
+                    bbtb_val = api_data.get('bbtb')
+
+                    hasil_kode = {
+                        'bbu': int(bbu_val['kode'] if isinstance(bbu_val, dict) else bbu_val),
+                        'tbu': int(tbu_val['kode'] if isinstance(tbu_val, dict) else tbu_val),
+                        'bbtb': int(bbtb_val['kode'] if isinstance(bbtb_val, dict) else bbtb_val)
+                    }
+
+                    bbu_label  = ENCODING_MAP['Weight for Age'].get(hasil_kode['bbu'],  'Unknown')
+                    tbu_label  = ENCODING_MAP['Height for Age'].get(hasil_kode['tbu'],  'Unknown')
+                    bbtb_label = ENCODING_MAP['Weight for Height'].get(hasil_kode['bbtb'], 'Unknown')
+
+                    return {
+                        'bbu': {
+                            'kode':  hasil_kode['bbu'],
+                            'label': bbu_label,
+                            'color': LABEL_COLOR.get(bbu_label, 'secondary'),
+                            'desc':  'Berat Badan menurut Umur (BB/U)'
+                        },
+                        'tbu': {
+                            'kode':  hasil_kode['tbu'],
+                            'label': tbu_label,
+                            'color': LABEL_COLOR.get(tbu_label, 'secondary'),
+                            'desc':  'Tinggi Badan menurut Umur (TB/U)'
+                        },
+                        'bbtb': {
+                            'kode':  hasil_kode['bbtb'],
+                            'label': bbtb_label,
+                            'color': LABEL_COLOR.get(bbtb_label, 'secondary'),
+                            'desc':  'Berat Badan menurut Tinggi Badan (BB/TB)'
+                        },
+                        'model_used': 'TabNet (Cloud Model)'
+                    }
+            except Exception as e:
+                print(f"⚠️ Panggilan ke PREDICTOR_API_URL gagal ({e}). Menggunakan lokal / fallback.")
+
+        # 2. Coba model lokal TabNet
         X = np.array([[gender, age_months, weight, height]], dtype=np.float32)
         X_scaled = self._scale(X)
 

@@ -35,7 +35,53 @@ from flask import (
     Flask, render_template, request, redirect, url_for,
     session, jsonify, flash, send_file, Response, Request
 )
-from flask_mysqldb import MySQL
+
+# ─── MySQL Driver (Support Flask-MySQLdb & PyMySQL untuk Vercel) ─────────────
+try:
+    from flask_mysqldb import MySQL
+except ImportError:
+    import pymysql
+    import pymysql.cursors
+    from flask import g
+
+    class MySQL:
+        """Fallback MySQL wrapper menggunakan PyMySQL untuk serverless / Vercel"""
+        def __init__(self, app=None):
+            self.app = app
+            if app is not None:
+                self.init_app(app)
+
+        def init_app(self, app):
+            self.app = app
+            app.teardown_appcontext(self.teardown)
+
+        @property
+        def connection(self):
+            if 'db_conn' not in g or g.db_conn is None or not getattr(g.db_conn, 'open', False):
+                ssl_config = None
+                if os.environ.get('MYSQL_SSL', '').lower() in ('true', '1', 'required'):
+                    ssl_config = {'ssl': True}
+
+                g.db_conn = pymysql.connect(
+                    host=self.app.config.get('MYSQL_HOST', 'localhost'),
+                    port=int(self.app.config.get('MYSQL_PORT', 3306)),
+                    user=self.app.config.get('MYSQL_USER', 'root'),
+                    password=self.app.config.get('MYSQL_PASSWORD', ''),
+                    database=self.app.config.get('MYSQL_DB', 'gizi_balita'),
+                    cursorclass=pymysql.cursors.DictCursor,
+                    autocommit=False,
+                    ssl=ssl_config
+                )
+            return g.db_conn
+
+        def teardown(self, exception):
+            conn = g.pop('db_conn', None)
+            if conn is not None and getattr(conn, 'open', False):
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+
 import bcrypt
 from werkzeug.utils import secure_filename
 
@@ -73,13 +119,20 @@ if os.environ.get('DEBUG'):
     print(f"  Password: {'*' * len(app.config['MYSQL_PASSWORD'])}")
     print(f"  Database: {app.config['MYSQL_DB']}")
 
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+if os.environ.get('VERCEL'):
+    UPLOAD_FOLDER = os.path.join('/tmp', 'uploads')
+else:
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB
 Request.max_form_memory_size = 50 * 1024 * 1024      # 50MB
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+try:
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+except Exception as e:
+    print(f"Warning: gagal membuat UPLOAD_FOLDER: {e}")
 
 mysql = MySQL(app)
 
