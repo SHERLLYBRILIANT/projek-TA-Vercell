@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: gizilens-model
+    runtime: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r microservice_model/requirements.txt
+    startCommand: python microservice_model/app.py
+    envVars:
+      - key: PORT
+        value: 10000
