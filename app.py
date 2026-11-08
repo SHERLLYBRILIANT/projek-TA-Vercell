@@ -33,7 +33,7 @@ import numpy as np
 import pandas as pd
 from flask import (
     Flask, render_template, request, redirect, url_for,
-    session, jsonify, flash, send_file, Response, Request
+    session, jsonify, flash, send_file, Response, Request, send_from_directory
 )
 
 # ─── MySQL Driver (Support Flask-MySQLdb & PyMySQL untuk Vercel) ─────────────
@@ -293,7 +293,7 @@ def dashboard():
 @login_required
 def pemeriksaan():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT id, nama, jenis_kelamin FROM balita ORDER BY nama")
+    cur.execute("SELECT id, nama, jenis_kelamin, DATE_FORMAT(tanggal_lahir, '%%Y-%%m-%%d') AS tanggal_lahir FROM balita ORDER BY nama")
     list_balita = cur.fetchall()
     cur.close()
     return render_template('pemeriksaan.html', list_balita=list_balita)
@@ -643,6 +643,22 @@ def hasil(pemeriksaan_id):
 @login_required
 def batch():
     return render_template('batch.html')
+
+@app.route('/download-template-batch')
+def download_template_batch():
+    """Download template CSV untuk batch upload"""
+    csv_path = os.path.join(BASE_DIR, 'static', 'contoh_data_batch.csv')
+    return send_file(
+        csv_path,
+        as_attachment=True,
+        download_name='contoh_data_batch.csv',
+        mimetype='text/csv'
+    )
+
+@app.route('/static/<path:filename>')
+def custom_static_serve(filename):
+    """Fallback manual static file server untuk Vercel Serverless"""
+    return send_from_directory(os.path.join(BASE_DIR, 'static'), filename)
 
 @app.route('/api/batch/upload', methods=['POST'])
 @login_required
@@ -1620,36 +1636,37 @@ def api_grafik_data(balita_id):
         print(f"[API] Query: {query}")
         
         cur.execute(query, (balita_id,))
-        riwayat = cur.fetchall()
+        raw_riwayat = cur.fetchall()
         # Fetch balita identity information
         cur2 = mysql.connection.cursor()
         cur2.execute("SELECT id, nama, nama_ibu, jenis_kelamin, DATE_FORMAT(tanggal_lahir, '%%d/%%m/%%Y') AS tanggal_lahir, alamat FROM balita WHERE id = %s", (balita_id,))
-        balita_info = cur2.fetchone()
+        raw_balita = cur2.fetchone()
         cur2.close()
         cur.close()
-        
-        print(f"[API] Query returned {len(riwayat)} records")
-        if riwayat:
-            print(f"[API] First record: {riwayat[0]}")
-            print(f"[API] First record type: {type(riwayat[0])}")
-            print(f"[API] First record keys: {list(riwayat[0].keys()) if isinstance(riwayat[0], dict) else 'Not a dict!'}")
-        
-        if not riwayat:
+
+        if not raw_riwayat:
             print(f"[API] No data found for balita_id={balita_id}")
             return jsonify({'success': False, 'message': 'Tidak ada data pemeriksaan'}), 404
-        
+
+        riwayat = []
+        for r in raw_riwayat:
+            riwayat.append({
+                'umur_bulan': int(r.get('umur_bulan', 0)),
+                'berat_badan': float(r.get('berat_badan', 0)),
+                'tinggi_badan': float(r.get('tinggi_badan', 0)),
+                'tgl_format': str(r.get('tgl_format', '')),
+                'tanggal_periksa': str(r.get('tanggal_periksa', ''))
+            })
+
+        balita_info = dict(raw_balita) if raw_balita else {}
+
         response_data = {
             'success': True,
             'data': riwayat,
             'count': len(riwayat),
-            'balita': balita_info,
-            'debug': {
-                'balita_id': balita_id,
-                'record_count': len(riwayat),
-                'sample_record': riwayat[0] if riwayat else None
-            }
+            'balita': balita_info
         }
-        
+
         print(f"[API] Returning {len(riwayat)} records successfully")
         return jsonify(response_data)
         

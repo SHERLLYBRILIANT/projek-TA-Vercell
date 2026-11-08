@@ -208,12 +208,11 @@
           <div class="col-6">
             <label class="form-label fw-bold text-dark">Umur (Bulan) <span class="text-danger">*</span></label>
             <div class="input-group">
-              <input type="number" id="umurBulan" class="form-control bg-light" readonly
-                     placeholder="0–60" min="0" max="60" required
-                     style="border-style: dashed !important; border-color: #6c757d !important;"/>
+              <input type="number" id="umurBulan" class="form-control"
+                     placeholder="0–60" min="0" max="60" required />
               <span class="input-group-text">bln</span>
             </div>
-            <div class="form-text fw-medium text-muted">Rentang: 0 – 60 bulan</div>
+            <div class="form-text fw-medium text-muted">Otomatis terhitung dari tanggal lahir balita</div>
           </div>
           <div class="col-6">
             <label class="form-label fw-bold text-dark">Jenis Kelamin</label>
@@ -462,9 +461,10 @@ function syncJenisKelaminDisplay() {
   }
 }
 
-balitaSelect.addEventListener('change', function() {
-  syncJenisKelaminDisplay();
-});
+balitaSelect.addEventListener('change', syncJenisKelaminDisplay);
+balitaSelect.addEventListener('input', syncJenisKelaminDisplay);
+document.addEventListener('DOMContentLoaded', syncJenisKelaminDisplay);
+window.addEventListener('load', syncJenisKelaminDisplay);
 
 async function refreshBalitaDropdown(selectedId = '') {
   try {
