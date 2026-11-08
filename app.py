@@ -426,8 +426,23 @@ def api_list_balita():
             )
             ORDER BY b.nama
         """, ('%Y-%m-%d',))
-        list_balita = cur.fetchall()
+        rows = cur.fetchall()
         cur.close()
+        # Konversi semua nilai ke tipe Python native agar jsonify() tidak error
+        list_balita = []
+        for r in rows:
+            list_balita.append({
+                'id':            int(r['id']) if r.get('id') is not None else None,
+                'nama':          str(r['nama']) if r.get('nama') is not None else '',
+                'jenis_kelamin': str(r['jenis_kelamin']) if r.get('jenis_kelamin') is not None else '',
+                'nama_ibu':      str(r['nama_ibu']) if r.get('nama_ibu') is not None else '',
+                'nik':           str(r['nik']) if r.get('nik') is not None else '',
+                'tanggal_lahir': str(r['tanggal_lahir']) if r.get('tanggal_lahir') is not None else '',
+                'alamat':        str(r['alamat']) if r.get('alamat') is not None else '',
+                'umur_bulan':    int(r['umur_bulan']) if r.get('umur_bulan') is not None else None,
+                'berat_badan':   float(r['berat_badan']) if r.get('berat_badan') is not None else None,
+                'tinggi_badan':  float(r['tinggi_badan']) if r.get('tinggi_badan') is not None else None,
+            })
         return jsonify({'success': True, 'balita': list_balita})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
