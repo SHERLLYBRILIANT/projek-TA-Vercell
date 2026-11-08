@@ -11,8 +11,14 @@ import joblib
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Cek lokasi folder models (bisa di folder yang sama atau subfolder)
-MODEL_DIR = os.path.join(BASE_DIR, 'models') if os.path.exists(os.path.join(BASE_DIR, 'models')) else BASE_DIR
+PARENT_DIR = os.path.dirname(BASE_DIR)
+
+if os.path.exists(os.path.join(BASE_DIR, 'models')):
+    MODEL_DIR = os.path.join(BASE_DIR, 'models')
+elif os.path.exists(os.path.join(PARENT_DIR, 'models')):
+    MODEL_DIR = os.path.join(PARENT_DIR, 'models')
+else:
+    MODEL_DIR = BASE_DIR
 
 SCALER_PARAMS = {
     'mean': np.array([0.48, 24.5, 9.2, 78.5]),
