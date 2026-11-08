@@ -73,72 +73,93 @@ class GiziPredictor:
     def __init__(self):
         self.models = {}
         self.model_loaded = False
+        self.engine = None
         self._load_models()
 
     def _load_models(self):
-        """Load TabNet models dari folder models/"""
+        """Load TabNet models. Prioritas: ONNX Runtime (ultra-ringan untuk Vercel) -> PyTorch TabNet"""
+        self.engine = None
+        target_files_onnx = {
+            'Weight for Age':    'tabnet_weight_for_age.onnx',
+            'Height for Age':    'tabnet_height_for_age.onnx',
+            'Weight for Height': 'tabnet_weight_for_height.onnx',
+        }
+        target_files_zip = {
+            'Weight for Age':    'tabnet_weight_for_age.zip',
+            'Height for Age':    'tabnet_height_for_age.zip',
+            'Weight for Height': 'tabnet_weight_for_height.zip',
+        }
+
+        # 1. Coba ONNX Runtime (sangat cepat & muat di Vercel < 250MB)
         try:
-            from pytorch_tabnet.tab_model import TabNetClassifier
-
-            target_files = {
-                'Weight for Age':   'tabnet_weight_for_age.zip',
-                'Height for Age':   'tabnet_height_for_age.zip',
-                'Weight for Height':'tabnet_weight_for_height.zip',
-            }
-
+            import onnxruntime as ort
             loaded = 0
-            for target, fname in target_files.items():
-                model_path = os.path.join(MODEL_DIR, fname.replace('.zip', ''))
-                zip_path   = os.path.join(MODEL_DIR, fname)
-
-                # TabNet load_model menerima path tanpa .zip
-                if os.path.exists(zip_path):
-                    clf = TabNetClassifier()
-                    clf.load_model(zip_path)
-                    self.models[target] = clf
+            for target, fname in target_files_onnx.items():
+                fpath = os.path.join(MODEL_DIR, fname)
+                if os.path.exists(fpath):
+                    sess = ort.InferenceSession(fpath, providers=['CPUExecutionProvider'])
+                    self.models[target] = sess
                     loaded += 1
-                    print(f'  ✅ Model loaded: {fname}')
-                else:
-                    print(f'  ⚠️  Model tidak ditemukan: {zip_path}')
+            if loaded == 3:
+                self.model_loaded = True
+                self.engine = 'onnx'
+                print('  ✅ Semua model TabNet berhasil dimuat via ONNX Runtime (Vercel Ready)!')
+        except Exception as e:
+            print(f'  Info ONNX: {e}')
 
-            # Load scaler jika ada
-            scaler_path = os.path.join(MODEL_DIR, 'standard_scaler.joblib')
-            if os.path.exists(scaler_path):
+        # 2. Jika ONNX belum dimuat, coba PyTorch TabNet
+        if not self.model_loaded:
+            try:
+                from pytorch_tabnet.tab_model import TabNetClassifier
+                loaded = 0
+                for target, fname in target_files_zip.items():
+                    zip_path = os.path.join(MODEL_DIR, fname)
+                    if os.path.exists(zip_path):
+                        clf = TabNetClassifier()
+                        clf.load_model(zip_path)
+                        self.models[target] = clf
+                        loaded += 1
+                if loaded == 3:
+                    self.model_loaded = True
+                    self.engine = 'pytorch'
+                    print('  ✅ Semua model TabNet berhasil dimuat via PyTorch!')
+            except Exception as e:
+                print(f'  Info PyTorch: {e}')
+
+        # Load scaler jika ada
+        scaler_path = os.path.join(MODEL_DIR, 'standard_scaler.joblib')
+        if os.path.exists(scaler_path):
+            try:
                 import joblib
                 scaler = joblib.load(scaler_path)
-                # Jika scaler hanya punya 3 fitur (Age, Weight, Height), tambahkan dummy untuk Gender agar tidak ikut di-scale
                 if len(scaler.mean_) == 3:
-                    import numpy as np
                     SCALER_PARAMS['mean'] = np.array([0.0] + list(scaler.mean_))
                     SCALER_PARAMS['std']  = np.array([1.0] + list(scaler.scale_))
                 else:
                     SCALER_PARAMS['mean'] = scaler.mean_
                     SCALER_PARAMS['std']  = scaler.scale_
                 print('  ✅ Scaler loaded dari standard_scaler.joblib')
+            except Exception as e:
+                print(f'  Warning scaler: {e}')
 
-            if loaded == 3:
-                self.model_loaded = True
-                print('✅ Semua model TabNet berhasil dimuat!')
-            elif loaded > 0:
-                self.model_loaded = True
-                print(f'⚠️  {loaded}/3 model dimuat. Model sisanya gunakan fallback.')
-            else:
-                print('⚠️  Tidak ada model TabNet ditemukan. Menggunakan rule-based fallback.')
-
-        except ImportError:
-            print('⚠️  pytorch-tabnet belum terinstall. Gunakan: pip install pytorch-tabnet')
-        except Exception as e:
-            print(f'⚠️  Gagal memuat model: {e}')
+        if not self.model_loaded:
+            print('  ⚠️  Model tidak ditemukan/gagal dimuat. Menggunakan rule-based fallback.')
 
     def _scale(self, X: np.ndarray) -> np.ndarray:
         """StandardScaler transform"""
-        return (X - SCALER_PARAMS['mean']) / SCALER_PARAMS['std']
+        scaled = (X - SCALER_PARAMS['mean']) / SCALER_PARAMS['std']
+        return scaled.astype(np.float32)
 
     def _predict_with_model(self, target: str, X_scaled: np.ndarray) -> int:
-        """Prediksi dengan model TabNet"""
+        """Prediksi dengan model TabNet (ONNX Runtime atau PyTorch)"""
         model = self.models[target]
-        pred  = model.predict(X_scaled)
-        return int(pred[0])
+        if self.engine == 'onnx':
+            out = model.run(['output'], {'input': X_scaled})[0]
+            pred = np.argmax(out, axis=1)[0]
+            return int(pred)
+        else:
+            pred = model.predict(X_scaled)
+            return int(pred[0])
 
     def _rule_based_fallback(self, gender: int, age_months: int,
                              weight: float, height: float) -> dict:
